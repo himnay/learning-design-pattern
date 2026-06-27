@@ -8,6 +8,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/gang-of-four/pom.xml" />
+        <option value="$PROJECT_DIR$/microservice-pattern/pom.xml" />
       </list>
     </option>
   </component>

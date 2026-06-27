@@ -6,13 +6,15 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="gang-of-four" />
+        <module name="gang-of-four-patterns" />
+        <module name="microservice-patterns" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="gang-of-four" options="-parameters" />
+      <module name="gang-of-four-patterns" options="-parameters" />
+      <module name="microservice-patterns" options="-parameters" />
     </option>
   </component>
 </project>
