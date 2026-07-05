@@ -93,6 +93,50 @@
 | `CloneSafeSingleton.java` | Guard against Cloning attack |
 | `SingletonEnum.java` | Enum-based singleton — immune to all four attacks |
 
+**Structure:**
+
+```mermaid
+classDiagram
+    class DatabaseConnection {
+        -static volatile DatabaseConnection instance
+        -String url
+        -DatabaseConnection(String url)
+        +static getInstance() DatabaseConnection
+        +executeQuery(String sql) String
+    }
+    class ReflectionSafeSingleton {
+        -static ReflectionSafeSingleton instance
+        -ReflectionSafeSingleton() : throws if instance != null
+        +static getInstance() ReflectionSafeSingleton
+    }
+    class ThreadSafeSingleton {
+        -static volatile ThreadSafeSingleton instance
+        +static getInstance() ThreadSafeSingleton
+        +static getInstanceViaHolder() ThreadSafeSingleton
+        -static class Holder
+    }
+    class SerializationSafeSingleton {
+        -static SerializationSafeSingleton instance
+        +static getInstance() SerializationSafeSingleton
+        #readResolve() Object
+    }
+    class CloneSafeSingleton {
+        -static CloneSafeSingleton instance
+        +static getInstance() CloneSafeSingleton
+        #clone() Object : throws CloneNotSupportedException
+    }
+    class SingletonEnum {
+        <<enumeration>>
+        INSTANCE
+        +doWork() void
+    }
+    note for DatabaseConnection "Double-checked locking + volatile"
+    note for SingletonEnum "JVM-guaranteed safe against\nreflection, serialization, cloning"
+```
+
+- All six variants share the same shape: a **private constructor**, a **static self-reference**, and a **static accessor** — they differ only in how they defend that accessor against reentry
+- `SingletonEnum` needs no explicit guards because the JVM enforces all four properties as part of the enum contract
+
 ---
 
 #### Core implementation — Double-Checked Locking
@@ -371,6 +415,27 @@ class OrderService {
 | `PushNotification.java` | Concrete product |
 | `NotificationFactory.java` | Factory with static `create(channel)` method |
 
+**Structure:**
+
+```mermaid
+classDiagram
+    class Notification {
+        <<interface>>
+        +send(String recipient, String message) void
+        +getType() String
+    }
+    class EmailNotification
+    class SmsNotification
+    class PushNotification
+    class NotificationFactory {
+        +static create(String channel) Notification
+    }
+    Notification <|.. EmailNotification
+    Notification <|.. SmsNotification
+    Notification <|.. PushNotification
+    NotificationFactory ..> Notification : creates
+```
+
 **Key implementation detail:**
 ```java
 public static Notification create(String channel) {
@@ -438,6 +503,41 @@ public NotificationSender smsSender() { return new SmsSender(); }
 | `WindowsCheckbox.java`, `MacCheckbox.java` | Concrete products |
 | `Application.java` | Client that uses the factory |
 
+**Structure:**
+
+```mermaid
+classDiagram
+    class GUIFactory {
+        <<interface>>
+        +createButton() Button
+        +createCheckbox() Checkbox
+    }
+    class Button { <<interface>> +render() void +onClick() void }
+    class Checkbox { <<interface>> +render() void +toggle() void }
+    class WindowsFactory
+    class MacFactory
+    class WindowsButton
+    class MacButton
+    class WindowsCheckbox
+    class MacCheckbox
+    class Application { +render() void }
+
+    GUIFactory <|.. WindowsFactory
+    GUIFactory <|.. MacFactory
+    Button <|.. WindowsButton
+    Button <|.. MacButton
+    Checkbox <|.. WindowsCheckbox
+    Checkbox <|.. MacCheckbox
+    WindowsFactory ..> WindowsButton : creates
+    WindowsFactory ..> WindowsCheckbox : creates
+    MacFactory ..> MacButton : creates
+    MacFactory ..> MacCheckbox : creates
+    Application --> GUIFactory : uses
+```
+
+- The client (`Application`) depends only on `GUIFactory`, `Button`, and `Checkbox` — never on a concrete `Windows*`/`Mac*` class
+- Swapping the entire UI family is a single-line change: pass a different factory into `Application`'s constructor
+
 **Key implementation detail:**
 ```java
 // Client code never imports concrete classes
@@ -473,6 +573,36 @@ Rendering macOS-style checkbox [ ]
 | File | Role |
 |------|------|
 | `Pizza.java` | Product with inner `Builder` class |
+
+**Structure:**
+
+```mermaid
+classDiagram
+    class Pizza {
+        -String size
+        -String crust
+        -String sauce
+        -List~String~ toppings
+        -boolean extraCheese
+        -boolean glutenFree
+        -Pizza(Builder builder)
+        +toString() String
+    }
+    class Builder {
+        +size(String) Builder
+        +crust(String) Builder
+        +sauce(String) Builder
+        +toppings(List~String~) Builder
+        +extraCheese(boolean) Builder
+        +glutenFree(boolean) Builder
+        +build() Pizza
+    }
+    Pizza +-- Builder : static inner class
+    Builder ..> Pizza : constructs
+```
+
+- `Pizza`'s constructor is private — the only path to an instance is `new Pizza.Builder()....build()`
+- Each fluent setter returns `this`, letting calls chain; `build()` is the single point where validation and construction happen
 
 **Key implementation detail:**
 ```java
@@ -546,6 +676,45 @@ new SpringApplicationBuilder()
 | `Circle.java` | Concrete prototype |
 | `Rectangle.java` | Concrete prototype |
 | `ShapeRegistry.java` | Cache of prototype instances |
+
+**Structure:**
+
+```mermaid
+classDiagram
+    class Shape {
+        <<abstract>>
+        #String color
+        #int x
+        #int y
+        +Shape(Shape source)
+        +clone() Shape*
+        +area() double*
+    }
+    class Circle {
+        -double radius
+        +Circle(Circle source)
+        +clone() Circle
+        +area() double
+    }
+    class Rectangle {
+        -double width
+        -double height
+        +Rectangle(Rectangle source)
+        +clone() Rectangle
+        +area() double
+    }
+    class ShapeRegistry {
+        -Map~String,Shape~ cache
+        +register(String key, Shape shape) void
+        +get(String key) Shape
+    }
+    Shape <|-- Circle
+    Shape <|-- Rectangle
+    ShapeRegistry o--> Shape : caches prototypes
+```
+
+- Every concrete shape implements `clone()` via a **copy constructor** (`Circle(Circle source)`), not `Object.clone()` — each field is explicitly copied so deep-copy intent is visible in code, not hidden behind bitwise copy semantics
+- `ShapeRegistry.get(key)` returns a fresh clone of the cached prototype, so callers never mutate the shared template
 
 **Key implementation detail:**
 ```java
@@ -626,6 +795,32 @@ ShoppingCart fresh = cartProvider.get();  // new instance each time
 | `MediaAdapter.java` | Adapter — wraps adaptee, implements target |
 | `AudioPlayer.java` | Client — uses `MediaPlayer`, delegates to adapter |
 
+**Structure:**
+
+```mermaid
+classDiagram
+    class MediaPlayer { <<interface>> +play(String type, String file) void }
+    class AdvancedMediaPlayer { <<interface>> +playVlc(String) void +playMp4(String) void }
+    class VlcPlayer
+    class Mp4Player
+    class MediaAdapter {
+        -AdvancedMediaPlayer advancedPlayer
+        +MediaAdapter(String audioType)
+        +play(String type, String file) void
+    }
+    class AudioPlayer { +play(String type, String file) void }
+
+    MediaPlayer <|.. MediaAdapter
+    MediaPlayer <|.. AudioPlayer
+    AdvancedMediaPlayer <|.. VlcPlayer
+    AdvancedMediaPlayer <|.. Mp4Player
+    MediaAdapter --> AdvancedMediaPlayer : wraps
+    AudioPlayer --> MediaAdapter : delegates to
+```
+
+- `AudioPlayer` only ever calls `MediaPlayer.play(...)` — it has no idea `VlcPlayer`/`Mp4Player` exist
+- `MediaAdapter` is the sole class that knows both interfaces; it translates the `MediaPlayer` call into the matching `AdvancedMediaPlayer` call
+
 **Key implementation detail:**
 ```java
 public class MediaAdapter implements MediaPlayer {
@@ -692,6 +887,37 @@ List<Order> orders = jdbcTemplate.query(
 | `Shape.java` | Abstraction — holds reference to `DrawingAPI` |
 | `CircleShape.java` | Refined abstraction |
 
+**Structure:**
+
+```mermaid
+classDiagram
+    class DrawingAPI {
+        <<interface>>
+        +drawCircle(x, y, radius) void
+        +drawRectangle(x, y, w, h) void
+        +getApiName() String
+    }
+    class SvgDrawingAPI
+    class CanvasDrawingAPI
+    class Shape {
+        <<abstract>>
+        #DrawingAPI drawingAPI
+        +draw() void*
+        +resize(double factor) void*
+    }
+    class CircleShape {
+        +draw() void
+        +resize(double factor) void
+    }
+    DrawingAPI <|.. SvgDrawingAPI
+    DrawingAPI <|.. CanvasDrawingAPI
+    Shape <|-- CircleShape
+    Shape o--> DrawingAPI : bridges to
+```
+
+- `Shape` (the abstraction hierarchy) and `DrawingAPI` (the implementation hierarchy) vary **independently**: a new shape (e.g. `SquareShape`) or a new rendering API (e.g. `OpenGlDrawingAPI`) can be added without touching the other hierarchy
+- The "bridge" is the `drawingAPI` field — composition instead of inheritance is what decouples the two axes of variation
+
 **Key implementation detail:**
 ```java
 // Abstraction holds a reference to the implementor (bridge)
@@ -731,6 +957,34 @@ SVG: <circle cx='10.0' cy='20.0' r='10.0'/>
 | `FileSystemComponent.java` | Component interface |
 | `File.java` | Leaf node |
 | `Directory.java` | Composite node — contains children |
+
+**Structure:**
+
+```mermaid
+classDiagram
+    class FileSystemComponent {
+        <<interface>>
+        +getName() String
+        +getSize() long
+        +print(String indent) void
+    }
+    class File {
+        -long size
+        +getSize() long
+    }
+    class Directory {
+        -List~FileSystemComponent~ children
+        +add(FileSystemComponent) void
+        +remove(FileSystemComponent) void
+        +getSize() long
+    }
+    FileSystemComponent <|.. File
+    FileSystemComponent <|.. Directory
+    Directory o--> "many" FileSystemComponent : children
+```
+
+- `Directory` implements the same `FileSystemComponent` interface as `File`, and can itself hold other `Directory` instances — this is what makes the structure recursive
+- `getSize()` on a `Directory` doesn't know or care whether each child is a `File` or another `Directory`; it just sums `child.getSize()` for all children, and the recursion falls out naturally
 
 **Key implementation detail:**
 ```java
@@ -796,6 +1050,33 @@ private int port;
 | `SimpleCoffee.java` | Concrete component |
 | `CoffeeDecorator.java` | Abstract decorator — wraps a `Coffee` |
 | `MilkDecorator.java`, `SugarDecorator.java`, `VanillaDecorator.java` | Concrete decorators |
+
+**Structure:**
+
+```mermaid
+classDiagram
+    class Coffee { <<interface>> +getDescription() String +getCost() double }
+    class SimpleCoffee
+    class CoffeeDecorator {
+        <<abstract>>
+        #Coffee decoratedCoffee
+        +getDescription() String
+        +getCost() double
+    }
+    class MilkDecorator
+    class SugarDecorator
+    class VanillaDecorator
+
+    Coffee <|.. SimpleCoffee
+    Coffee <|.. CoffeeDecorator
+    CoffeeDecorator <|-- MilkDecorator
+    CoffeeDecorator <|-- SugarDecorator
+    CoffeeDecorator <|-- VanillaDecorator
+    CoffeeDecorator o--> Coffee : wraps
+```
+
+- `CoffeeDecorator` implements `Coffee` **and** holds a `Coffee` reference — so decorators can wrap a `SimpleCoffee` or wrap **each other**, stacking arbitrarily deep (`new SugarDecorator(new MilkDecorator(new SimpleCoffee()))`)
+- Each concrete decorator calls through to `decoratedCoffee.getCost()` first, then adds its own delta — the same recursive-delegation shape Java's `java.io` streams use
 
 **Key implementation detail:**
 ```java
@@ -869,6 +1150,32 @@ new BufferedReader(new InputStreamReader(new FileInputStream("data.txt")))
 | `DVDPlayer.java`, `Projector.java`, `SoundSystem.java`, `Lights.java` | Complex subsystem components |
 | `HomeTheaterFacade.java` | Facade — orchestrates all subsystems |
 
+**Structure:**
+
+```mermaid
+classDiagram
+    class HomeTheaterFacade {
+        -DVDPlayer dvd
+        -Projector projector
+        -SoundSystem sound
+        -Lights lights
+        +watchMovie(String movie) void
+        +endMovie() void
+    }
+    class DVDPlayer
+    class Projector
+    class SoundSystem
+    class Lights
+
+    HomeTheaterFacade --> DVDPlayer
+    HomeTheaterFacade --> Projector
+    HomeTheaterFacade --> SoundSystem
+    HomeTheaterFacade --> Lights
+```
+
+- The client calls exactly two methods — `watchMovie()` / `endMovie()` — instead of coordinating four subsystem objects and their correct call order itself
+- The subsystem classes (`DVDPlayer`, `Projector`, `SoundSystem`, `Lights`) are unaware the facade exists — they can still be used directly if fine-grained control is needed
+
 **Key implementation detail:**
 ```java
 public void watchMovie(String movie) {
@@ -914,6 +1221,38 @@ DVD Player: Playing 'Inception'
 | `TreeFactory.java` | Flyweight factory with cache |
 | `Forest.java` | Client |
 
+**Structure:**
+
+```mermaid
+classDiagram
+    class TreeType {
+        -String name
+        -String color
+        -String texture
+        +draw(int x, int y) void
+    }
+    class TreeFactory {
+        -static Map~String,TreeType~ cache
+        +static getTreeType(name, color, texture) TreeType
+    }
+    class Tree {
+        -int x
+        -int y
+        -TreeType type
+        +draw() void
+    }
+    class Forest {
+        -List~Tree~ trees
+        +plantTree(x, y, name, color, texture) void
+    }
+    TreeFactory ..> TreeType : caches/creates
+    Tree --> TreeType : extrinsic ref to shared flyweight
+    Forest o--> Tree
+```
+
+- `TreeType` holds only the **intrinsic** state shared across many trees (species, color, texture); `Tree` holds the **extrinsic** state unique per instance (`x`, `y`) plus a reference to its shared `TreeType`
+- `TreeFactory.getTreeType(...)` uses `computeIfAbsent` keyed by `name-color-texture`, so planting 8 trees of 2 species allocates only 2 `TreeType` objects total
+
 **Key implementation detail:**
 ```java
 // Only 2 TreeType objects created for 8 trees
@@ -952,6 +1291,29 @@ Unique TreeType objects created: 2 (for 8 trees)
 | `Image.java` | Subject interface |
 | `RealImage.java` | Real subject — expensive to create |
 | `ProxyImage.java` | Proxy — controls access, lazy-loads `RealImage` |
+
+**Structure:**
+
+```mermaid
+classDiagram
+    class Image { <<interface>> +display() void }
+    class RealImage {
+        +RealImage(String fileName)
+        -loadFromDisk() void
+        +display() void
+    }
+    class ProxyImage {
+        -RealImage realImage
+        -String fileName
+        +display() void
+    }
+    Image <|.. RealImage
+    Image <|.. ProxyImage
+    ProxyImage --> RealImage : lazily creates & delegates
+```
+
+- `ProxyImage` implements the same `Image` interface as `RealImage`, so client code is identical whether it holds a proxy or the real subject
+- `RealImage` is only constructed — and only then does the expensive disk load happen — the first time `display()` is called on the proxy; subsequent calls reuse the cached `realImage`
 
 **Key implementation detail:**
 ```java
@@ -1027,6 +1389,32 @@ class OrderService {
 | `SupportTicket.java` | Request object |
 | `Level1Support.java`, `Level2Support.java`, `Level3Support.java` | Concrete handlers |
 
+**Structure:**
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant L1 as Level1Support
+    participant L2 as Level2Support
+    participant L3 as Level3Support
+
+    Client->>L1: handle(ticket)
+    alt severity handled at L1
+        L1-->>Client: resolved
+    else escalate
+        L1->>L2: escalate(ticket) -> handle(ticket)
+        alt severity handled at L2
+            L2-->>Client: resolved
+        else escalate
+            L2->>L3: escalate(ticket) -> handle(ticket)
+            L3-->>Client: resolved
+        end
+    end
+```
+
+- Each handler only decides two things: "can I resolve this?" and, if not, "who is next?" — it never needs to know the full chain or how many handlers follow it
+- `setNext()` returns the next handler, enabling the fluent `l1.setNext(l2).setNext(l3)` construction seen in the demo
+
 **Key implementation detail:**
 ```java
 // Fluent chaining
@@ -1091,6 +1479,29 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 | `LightOnCommand.java`, `LightOffCommand.java` | Concrete commands |
 | `RemoteControl.java` | Invoker — maintains command history |
 
+**Structure:**
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Remote as RemoteControl
+    participant Cmd as LightOnCommand
+    participant Light
+
+    Client->>Remote: press(lightOnCommand)
+    Remote->>Cmd: execute()
+    Cmd->>Light: turnOn()
+    Remote->>Remote: history.push(command)
+
+    Client->>Remote: undoLast()
+    Remote->>Remote: history.pop()
+    Remote->>Cmd: undo()
+    Cmd->>Light: turnOff()
+```
+
+- `RemoteControl` (the invoker) never references `Light` (the receiver) directly — it only knows the `Command` interface, so any new command can be added without changing the invoker
+- Each concrete command captures its receiver and the exact action, which is what makes `undo()` possible: the command remembers how to reverse itself
+
 **Key implementation detail:**
 ```java
 // Invoker stores history for undo
@@ -1136,6 +1547,29 @@ Undo -> Bedroom light: OFF
 | `Book.java` | Element type |
 | `BookCollection.java` | Aggregate — implements `Iterable<Book>`, provides forward and reverse iterators |
 
+**Structure:**
+
+```mermaid
+classDiagram
+    class Iterable~Book~ { <<interface>> }
+    class BookCollection {
+        -List~Book~ books
+        +addBook(Book) void
+        +iterator() Iterator~Book~
+        +reverseIterator() Iterator~Book~
+    }
+    class Book {
+        -String title
+        -String author
+        -int year
+    }
+    Iterable <|.. BookCollection
+    BookCollection o--> Book
+```
+
+- `BookCollection` implements `java.lang.Iterable<Book>`, so it plugs directly into Java's for-each syntax while hiding the underlying `ArrayList<Book>`
+- `reverseIterator()` returns a second, independent traversal strategy over the same backing list, demonstrating that a single aggregate can expose multiple iteration orders without exposing its storage
+
 **Key implementation detail:**
 ```java
 // Standard iterator — works with for-each
@@ -1167,6 +1601,24 @@ while (iter.hasNext()) { System.out.println(iter.next()); }
 | `ChatRoom.java` | Concrete mediator |
 | `ChatUser.java` | Abstract colleague |
 | `ConcreteUser.java` | Concrete colleague |
+
+**Structure:**
+
+```mermaid
+sequenceDiagram
+    participant Alice as ConcreteUser(Alice)
+    participant Room as ChatRoom
+    participant Bob as ConcreteUser(Bob)
+    participant Carol as ConcreteUser(Carol)
+
+    Alice->>Room: send("Hello everyone!")
+    Room->>Room: sendMessage(msg, sender=Alice)
+    Room->>Bob: receive(msg, "Alice")
+    Room->>Carol: receive(msg, "Alice")
+```
+
+- `ConcreteUser` instances never hold references to each other — only to the shared `ChatMediator` — collapsing what would be N² direct relationships into N relationships with a single mediator
+- `ChatRoom.sendMessage()` filters the sender out of the broadcast (`users.stream().filter(u -> u != sender)`), so a user never receives its own message back
 
 **Key implementation detail:**
 ```java
@@ -1211,6 +1663,33 @@ public void sendMessage(String message, ChatUser sender) {
 | `TextEditor.java` | Originator — creates and restores mementos |
 | `EditorHistory.java` | Caretaker — manages the undo stack |
 
+**Structure:**
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Editor as TextEditor (Originator)
+    participant History as EditorHistory (Caretaker)
+    participant Memento as EditorMemento
+
+    Client->>Editor: type("Hello")
+    Client->>Editor: save()
+    Editor->>Memento: new EditorMemento(content, cursor)
+    Editor-->>History: push(memento)
+
+    Client->>Editor: type(", World")
+    Client->>Editor: save()
+    Editor-->>History: push(memento)
+
+    Client->>History: pop()
+    History-->>Client: memento
+    Client->>Editor: restore(memento)
+    Editor->>Editor: content = memento.getContent()
+```
+
+- `EditorHistory` (caretaker) stores `EditorMemento` objects on a `Deque` but never reads or modifies their fields — it only knows how to `push()`/`pop()`, which is what preserves `TextEditor`'s encapsulation
+- Only `TextEditor` (the originator) can create (`save()`) or apply (`restore()`) a memento, since `EditorMemento`'s fields are only accessible to it
+
 **Key implementation detail:**
 ```java
 // Originator creates and restores from memento without exposing internals
@@ -1254,6 +1733,26 @@ Undo -> Editor{content='Hello', cursor=5}
 | `StockObserver.java` | Observer interface |
 | `StockMarket.java` | Subject — maintains subscriber list, publishes changes |
 | `StockTrader.java` | Concrete observer |
+
+**Structure:**
+
+```mermaid
+sequenceDiagram
+    participant Market as StockMarket (Subject)
+    participant Alice as StockTrader(Alice)
+    participant Bob as StockTrader(Bob)
+
+    Alice->>Market: subscribe(this)
+    Bob->>Market: subscribe(this)
+
+    Market->>Market: setPrice(183.50)
+    Market->>Alice: onPriceChanged(symbol, price, change)
+    Market->>Bob: onPriceChanged(symbol, price, change)
+    Bob-->>Bob: ALERT if |change| significant
+```
+
+- `StockMarket` only depends on the `StockObserver` interface, never on `StockTrader` directly — new observer types can subscribe without any change to the subject
+- `setPrice()` computes the delta once, then fans it out to every subscriber via `notifyObservers()`, so all observers see a consistent view of the same price change
 
 **Key implementation detail:**
 ```java
@@ -1334,6 +1833,19 @@ public void onReady() { /* app fully started */ }
 | `TrafficLightState.java` | State interface |
 | `RedState.java`, `GreenState.java`, `YellowState.java` | Concrete states |
 | `TrafficLight.java` | Context — delegates behavior to current state |
+
+**Structure:**
+
+```mermaid
+stateDiagram-v2
+    [*] --> RED
+    RED --> GREEN: handle() [RedState]
+    GREEN --> YELLOW: handle() [GreenState]
+    YELLOW --> RED: handle() [YellowState]
+```
+
+- `TrafficLight.change()` doesn't contain any conditional logic about colors — it simply calls `state.handle(this)` and lets the **current state object** decide both what happens now and what the next state is
+- Each concrete state (`RedState`, `GreenState`, `YellowState`) calls `light.setState(new NextState())` at the end of `handle()`, so the transition table lives inside the states themselves rather than in the context
 
 **Key implementation detail:**
 ```java
@@ -1420,6 +1932,28 @@ stateMachine.sendEvent(OrderEvent.SHIP);        // PAID → PROCESSING → SHIPP
 | `MergeSortStrategy.java` | Concrete strategy |
 | `Sorter.java` | Context — uses a `SortStrategy` |
 
+**Structure:**
+
+```mermaid
+classDiagram
+    class SortStrategy { <<interface>> +sort(int[] array) void +getName() String }
+    class BubbleSortStrategy
+    class QuickSortStrategy
+    class MergeSortStrategy
+    class Sorter {
+        -SortStrategy strategy
+        +setStrategy(SortStrategy) void
+        +sort(int[] array) void
+    }
+    SortStrategy <|.. BubbleSortStrategy
+    SortStrategy <|.. QuickSortStrategy
+    SortStrategy <|.. MergeSortStrategy
+    Sorter o--> SortStrategy : delegates to
+```
+
+- `Sorter` (the context) holds a `SortStrategy` reference and delegates `sort()` to it — swapping algorithms at runtime is a single `setStrategy()` call, with zero changes to `Sorter` itself
+- Each concrete strategy (`BubbleSortStrategy`, `QuickSortStrategy`, `MergeSortStrategy`) is fully interchangeable because they all satisfy the same `sort(int[])` contract, regardless of internal algorithmic complexity
+
 **Key implementation detail:**
 ```java
 // Strategy can be swapped at runtime
@@ -1495,6 +2029,35 @@ http.authenticationProvider(jwtProvider)
 | `DataMiner.java` | Abstract class with `mine()` template method |
 | `CsvDataMiner.java` | Overrides `extractData` and `parseData` for CSV |
 | `PdfDataMiner.java` | Overrides `extractData`, `parseData`, and `sendReport` for PDF |
+
+**Structure:**
+
+```mermaid
+classDiagram
+    class DataMiner {
+        <<abstract>>
+        +mine(String path) void
+        #extractData(String path) String*
+        #parseData(String rawData) String*
+        #analyzeData(String data) String
+        #sendReport(String analysis) void
+    }
+    class CsvDataMiner {
+        #extractData(String path) String
+        #parseData(String rawData) String
+    }
+    class PdfDataMiner {
+        #extractData(String path) String
+        #parseData(String rawData) String
+        #sendReport(String analysis) void
+    }
+    DataMiner <|-- CsvDataMiner
+    DataMiner <|-- PdfDataMiner
+    note for DataMiner "mine() is final -\nalgorithm skeleton\ncannot be altered"
+```
+
+- `mine()` is declared `final` — subclasses are structurally prevented from changing the sequence of steps (extract → parse → analyze → report), only the individual step implementations
+- `analyzeData()` and `sendReport()` have sensible defaults in the base class ("hook" steps), while `extractData()`/`parseData()` are abstract ("must-override" steps) — `PdfDataMiner` shows a subclass overriding both a required step and a hook (`sendReport`, to email instead of print)
 
 **Key implementation detail:**
 ```java
@@ -1575,6 +2138,29 @@ interface OrderClient {
 | `AreaCalculatorVisitor.java` | Concrete visitor |
 | `PerimeterCalculatorVisitor.java` | Concrete visitor |
 
+**Structure:**
+
+```mermaid
+classDiagram
+    class ShapeVisitor { <<interface>> +visit(Circle) void +visit(Rectangle) void +visit(Triangle) void }
+    class VisitableShape { <<interface>> +accept(ShapeVisitor) void }
+    class Circle { +accept(ShapeVisitor v) void }
+    class Rectangle { +accept(ShapeVisitor v) void }
+    class Triangle { +accept(ShapeVisitor v) void }
+    class AreaCalculatorVisitor
+    class PerimeterCalculatorVisitor
+
+    VisitableShape <|.. Circle
+    VisitableShape <|.. Rectangle
+    VisitableShape <|.. Triangle
+    ShapeVisitor <|.. AreaCalculatorVisitor
+    ShapeVisitor <|.. PerimeterCalculatorVisitor
+    Circle ..> ShapeVisitor : accept() double-dispatches to visit(Circle)
+```
+
+- Two independent hierarchies exist side by side: shapes (`Circle`/`Rectangle`/`Triangle`) and operations (`AreaCalculatorVisitor`/`PerimeterCalculatorVisitor`) — adding a new operation (e.g. a `PerimeterCalculatorVisitor`) requires zero changes to any shape class
+- **Double dispatch** is the mechanism that makes this work: `shape.accept(visitor)` calls back `visitor.visit(this)`, where `this`'s static type inside each shape class resolves to the correct overload (`visit(Circle)` vs `visit(Rectangle)`) at compile time — something a single `visit(Shape)` method couldn't do
+
 **Key implementation detail:**
 ```java
 // Double dispatch — shape calls back the visitor with its own type
@@ -1619,6 +2205,25 @@ Triangle perimeter: 12.00
 | `OrExpression.java` | Non-terminal — evaluates `left OR right` |
 | `AndExpression.java` | Non-terminal — evaluates `left AND right` |
 | `InterpreterDemo.java` | Builds and evaluates the expression tree |
+
+**Structure:**
+
+```mermaid
+classDiagram
+    class Expression { <<interface>> +interpret(String context) boolean }
+    class TerminalExpression { -String data +interpret(String) boolean }
+    class OrExpression { -Expression left -Expression right +interpret(String) boolean }
+    class AndExpression { -Expression left -Expression right +interpret(String) boolean }
+
+    Expression <|.. TerminalExpression
+    Expression <|.. OrExpression
+    Expression <|.. AndExpression
+    OrExpression o--> Expression : left/right
+    AndExpression o--> Expression : left/right
+```
+
+- `TerminalExpression` is the leaf of the grammar (checks whether a single token is present in the context string); `OrExpression`/`AndExpression` are non-terminals that recursively `interpret()` their `left` and `right` children and combine the booleans
+- Building `canAccess = new AndExpression(new OrExpression(isAdmin, isManager), isActive)` composes a small parse tree by hand — each node's `interpret()` call recurses into its children, exactly like a compiler evaluating an AST
 
 **Key implementation detail:**
 ```java
