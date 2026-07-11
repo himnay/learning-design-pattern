@@ -1,5 +1,14 @@
 # Learning Design Patterns
 
+## Table of contents
+
+1. [Layout & modules](#learning-design-patterns)
+2. [Why two categories of patterns](#why-two-categories-of-patterns)
+3. [Getting started](#getting-started)
+4. Module deep-dives: [gang-of-four-patterns](gang-of-four-patterns/README.md) · [microservice-patterns](microservice-patterns/README.md)
+
+---
+
 A Java / Spring Boot repository for studying software design patterns by implementing them, not just reading about them. It is organized as **two independent Maven projects** living side by side in one git repository (there is no aggregator/reactor `pom.xml` at the root — each module is built and run on its own):
 
 ```
