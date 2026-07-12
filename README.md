@@ -2,10 +2,10 @@
 
 ## Table of contents
 
-1. [Layout & modules](#learning-design-patterns)
-2. [Why two categories of patterns](#why-two-categories-of-patterns)
-3. [Getting started](#getting-started)
-4. Module deep-dives: [gang-of-four-patterns](gang-of-four-patterns/README.md) · [microservice-patterns](microservice-patterns/README.md)
+1. 🏗️ [Layout & modules](#learning-design-patterns)
+2. 🧩 [Why two categories of patterns](#why-two-categories-of-patterns)
+3. 🚀 [Getting started](#getting-started)
+4. 🧩 Module deep-dives: [gang-of-four-patterns](gang-of-four-patterns/README.md) · [microservice-patterns](microservice-patterns/README.md)
 
 ---
 
