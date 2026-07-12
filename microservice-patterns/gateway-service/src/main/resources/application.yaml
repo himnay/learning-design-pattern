@@ -1,0 +1,46 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: quotes-route
+              uri: ${QUOTES_UPSTREAM_URI:http://localhost:8081}
+              predicates:
+                - Path=/quotes/**
+              filters:
+                # single fixed downstream endpoint — SetPath, not a regex RewritePath
+                # (RewritePath's regex requires a literal trailing slash, so it silently
+                # no-ops on a bare /quotes request with no sub-path)
+                - SetPath=/api/quotes
+                - name: CircuitBreaker
+                  args:
+                    name: quotesRoute
+                    fallbackUri: forward:/fallback/quotes
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      quotesRoute:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 5s
+        permitted-number-of-calls-in-half-open-state: 3
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,gateway,circuitbreakers
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      access: unrestricted

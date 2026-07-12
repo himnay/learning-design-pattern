@@ -1,138 +1,182 @@
 # Microservice Patterns — Java / Spring Boot
 
-## Current Status: Scaffolding Only
+Distributed-systems patterns, each as its own runnable Spring Boot module — as opposed to
+`gang-of-four-patterns`, whose patterns live inside a single process. This module is a
+Maven aggregator (`packaging=pom`); each pattern below is its own child module with its
+own `mvn spring-boot:run`.
 
-This module is presently a **bare Spring Boot skeleton** — it does not yet contain any implemented microservice design pattern. This section states that plainly and precisely, rather than describing hypothetical functionality as if it existed.
-
-**What actually exists in the source tree today:**
-
-| File | Contents |
-|------|----------|
-| `src/main/java/com/org/pattern/microservicepattern/MicroservicePatternApplication.java` | A single `@SpringBootApplication` class with an empty `main()` — no controllers, no services, no domain logic |
-| `src/main/resources/application.yaml` | Only `spring.application.name: microservice-pattern` — no datasource, no messaging, no resilience configuration |
-| `src/main/resources/banner.txt` | ASCII startup banner — cosmetic only |
-| `src/test/java/.../MicroservicePatternApplicationTests.java` | A single `contextLoads()` smoke test |
-| `pom.xml` | Depends only on `spring-boot-starter` and `spring-boot-starter-test` — **no** Spring Cloud, Resilience4j, Eureka, Kafka, or any other pattern-specific dependency is declared |
-
-```mermaid
-classDiagram
-    class MicroservicePatternApplication {
-        +main(String[] args) void
-    }
-    note for MicroservicePatternApplication "@SpringBootApplication\nNo controllers, services, or\ndomain classes exist yet"
-```
-
-**Base package:** `com.org.pattern.microservicepattern`
-**Java version:** 25 | **Spring Boot:** 4.1.0
-
-Contrast this with the sibling `gang-of-four-patterns` module, which implements all 23 classic GoF patterns with working code, package-per-pattern organization, and `demo()` methods (see [`gang-of-four-patterns/README.md`](../gang-of-four-patterns/README.md)). No equivalent implementation work has happened here yet — this document exists so that when patterns *are* added, the package layout and library choices follow a single, deliberate plan instead of being decided ad hoc per pull request.
-
----
-
-## Purpose of This Document
-
-Because there is no implemented code to document yet, the rest of this README serves a different purpose than the GoF module's README: it is a **design reference and implementation roadmap** for the microservice patterns this module is intended to eventually house, modeled on the same style of explanation (intent → problem → concrete Java/Spring shape → diagram) used in `gang-of-four-patterns`. Every pattern below is marked **NOT YET IMPLEMENTED**. When an implementation lands, its entry should be updated with the same kind of package/file table and `demo()` output the GoF README uses, and the "NOT YET IMPLEMENTED" marker should be removed.
-
-Do not read anything below as a description of code that exists in this repository today.
+| Module | Pattern | Status |
+|---|---|---|
+| [`circuit-breaker-service`](circuit-breaker-service/) | Circuit Breaker (Resilience4j) | **Implemented** |
+| [`gateway-service`](gateway-service/) | API Gateway (Spring Cloud Gateway) | **Implemented** |
+| — | Service Discovery | Roadmap |
+| — | Saga | Roadmap |
+| — | Externalized Configuration | Roadmap |
 
 ---
 
 ## Table of Contents
 
-- [Circuit Breaker](#1-circuit-breaker) — *not yet implemented*
-- [API Gateway](#2-api-gateway) — *not yet implemented*
-- [Service Discovery](#3-service-discovery) — *not yet implemented*
-- [Saga](#4-saga) — *not yet implemented*
-- [Externalized Configuration](#5-externalized-configuration) — *not yet implemented*
-- [Suggested Package Layout](#suggested-package-layout)
+- [1. Circuit Breaker — `circuit-breaker-service`](#1-circuit-breaker--circuit-breaker-service) — *implemented*
+- [2. API Gateway — `gateway-service`](#2-api-gateway--gateway-service) — *implemented*
+- [3. Service Discovery](#3-service-discovery) — *roadmap*
+- [4. Saga](#4-saga) — *roadmap*
+- [5. Externalized Configuration](#5-externalized-configuration) — *roadmap*
+- [Running both services together](#running-both-services-together)
 
 ---
 
-## 1. Circuit Breaker
+## 1. Circuit Breaker — `circuit-breaker-service`
 
-> **Status: NOT YET IMPLEMENTED.** No `CircuitBreaker`, Resilience4j dependency, or fallback method exists anywhere in this module's source tree.
+**Intent:** Prevent a failing downstream service from being called repeatedly, giving it
+time to recover and giving the caller a fast, predictable failure instead of hanging on
+timeouts.
 
-**Intent:** Prevent a failing downstream service from being called repeatedly, giving it time to recover and giving the caller a fast, predictable failure instead of hanging on timeouts.
-
-**Problem it solves:** In a synchronous call chain (`A → B → C`), if `C` becomes slow or unresponsive, threads in `B` calling `C` pile up waiting on the timeout. If enough threads block, `B` itself runs out of capacity and becomes unresponsive to `A` — a single slow dependency cascades into a full outage. A circuit breaker wraps the call to `C`: after a failure threshold is crossed, it "opens" and short-circuits further calls immediately (optionally invoking a fallback), instead of letting each caller independently discover the failure the slow way.
-
-**How this would show up in this codebase, if implemented:** the natural home is `com.org.pattern.microservicepattern.resilience.circuitbreaker`, using `spring-boot-starter-actuator` + `resilience4j-spring-boot3` (neither is currently a dependency), with a `@CircuitBreaker(name = "...", fallbackMethod = "...")` annotated client method plus its fallback, mirroring the shape already demonstrated (as a GoF Decorator) in `gang-of-four-patterns/structural/decorator/spring/SpringResilience4jDecorator.java`.
+**Problem it solves:** In a synchronous call chain (`A → B → C`), if `C` becomes slow or
+unresponsive, threads in `B` calling `C` pile up waiting on the timeout. If enough threads
+block, `B` itself runs out of capacity — a single slow dependency cascades into a full
+outage. A circuit breaker wraps the call to `C`: after a failure threshold is crossed, it
+"opens" and short-circuits further calls immediately (invoking a fallback instead), so
+callers stop discovering the failure the slow way.
 
 ```mermaid
 stateDiagram-v2
     [*] --> Closed
-    Closed --> Open: failure rate > threshold
-    Open --> HalfOpen: after wait duration
+    Closed --> Open: failure rate ≥ 50% (min 5 calls / 10-call window)
+    Open --> HalfOpen: after 5s wait
     HalfOpen --> Closed: trial call succeeds
     HalfOpen --> Open: trial call fails
 ```
 
-- **Closed:** calls pass through normally; failures are counted
-- **Open:** calls fail fast (or hit a fallback) without touching the downstream service at all
-- **Half-Open:** a limited number of trial calls are allowed through to test whether the dependency has recovered
+### What's actually in the code
+
+| File | Role |
+|---|---|
+| `api/QuoteController.java` | `GET /api/quotes` — the protected endpoint |
+| `api/ChaosController.java` | `POST /api/chaos?failRate=N` — dials how often the downstream fails, for demoing the breaker live |
+| `downstream/FlakyQuoteClient.java` | Simulated downstream; throws `DownstreamUnavailableException` at the configured fail rate |
+| `service/QuoteService.java` | `@CircuitBreaker(name="quoteService", fallbackMethod="fallback")` + `@Retry(name="quoteService")` wrapping the flaky call |
+| `application.yaml` | Resilience4j tuning: `sliding-window-size: 10`, `minimum-number-of-calls: 5`, `failure-rate-threshold: 50`, `wait-duration-in-open-state: 5s` |
+
+Boot 4.1 note: the standalone `spring-boot-starter-aop` wrapper artifact was dropped from
+the Boot BOM. Resilience4j's `@CircuitBreaker`/`@Retry` are `@Aspect` classes that still
+need `org.aspectj:aspectjweaver` on the classpath for pointcut parsing (proxy-based, not
+real weaving) — the pom depends on it directly; the BOM still manages its version.
+
+```bash
+cd circuit-breaker-service
+mvn spring-boot:run                                     # port 8081
+curl -s localhost:8081/api/quotes                        # normal call
+curl -s -X POST 'localhost:8081/api/chaos?failRate=100'   # force every call to fail
+curl -s localhost:8081/api/quotes                         # -> fallback response
+curl -s localhost:8081/actuator/circuitbreakers           # state: CLOSED / OPEN / HALF_OPEN
+```
+
+`QuoteServiceCircuitBreakerTest` drives both `failRate=100` scenarios directly against the
+Resilience4j registry — no live HTTP needed to prove the breaker opens and the fallback
+fires.
 
 ---
 
-## 2. API Gateway
+## 2. API Gateway — `gateway-service`
 
-> **Status: NOT YET IMPLEMENTED.** No gateway module, route configuration, or `spring-cloud-gateway` dependency exists in this repository.
-
-**Intent:** Provide clients with a single, stable entry point into a system made of many independently deployable services, so that clients don't need to know service topology, and cross-cutting concerns (auth, rate limiting, routing) live in one place instead of being duplicated in every service.
-
-**Problem it solves:** Without a gateway, a client (mobile app, browser SPA, or another service) must know the network address of every backend service it talks to, and every service must independently implement authentication, TLS termination, rate limiting, and request logging. An API Gateway centralizes routing (`/orders/** → order-service`, `/inventory/** → inventory-service`) and cross-cutting filters, so backend services can focus purely on business logic.
-
-**How this would show up in this codebase, if implemented:** a `spring-cloud-starter-gateway` dependency plus route predicates/filters defined either in `application.yaml` or a `RouteLocator` bean, reusing the same Chain-of-Responsibility shape already documented for Spring Security's filter chain in `gang-of-four-patterns/behavioral/chainofresponsibility/spring/SpringSecurityFilterChain.java` — a gateway's filter chain (auth → rate-limit → circuit-breaker → route) is the same GoF pattern applied at the edge of the system rather than inside a single service.
+**Intent:** Give clients a single, stable entry point into a system made of many
+independently deployable services, so cross-cutting concerns (routing, correlation,
+resilience) live in one place instead of duplicated in every service.
 
 ```mermaid
 flowchart LR
-    Client -->|HTTPS request| Gateway["API Gateway\n(routing + auth + rate limit)"]
-    Gateway -->|/orders/**| OrderService[Order Service]
-    Gateway -->|/inventory/**| InventoryService[Inventory Service]
-    Gateway -->|/payments/**| PaymentService[Payment Service]
+    Client -->|GET /quotes| GW["gateway-service :8080<br/>CorrelationIdGlobalFilter<br/>+ route-level CircuitBreaker"]
+    GW -->|SetPath /api/quotes| CB[circuit-breaker-service :8081]
+    GW -.->|on failure/CB open| FB[GatewayFallbackController<br/>/fallback/quotes]
 ```
+
+### What's actually in the code
+
+| File | Role |
+|---|---|
+| `application.yaml` | Route: `Path=/quotes/**` → `SetPath=/api/quotes` on `circuit-breaker-service`, wrapped in a route-level `CircuitBreaker` filter (`fallbackUri: forward:/fallback/quotes`) |
+| `filter/CorrelationIdGlobalFilter.java` | `GlobalFilter` — stamps every request with `X-Correlation-Id` (propagates an incoming one, or mints a UUID), echoed on the response so client/gateway/backend logs share one id |
+| `fallback/GatewayFallbackController.java` | Target of the route's `fallbackUri` — returns a friendly JSON payload instead of surfacing the raw connection error |
+
+Uses `spring-cloud-starter-gateway-server-webflux` — the WebFlux-first rearchitected
+Gateway module (as opposed to the older `spring-cloud-starter-gateway`). One gotcha worth
+recording: its `RewritePath` filter's regex requires a **literal trailing slash** after
+the matched prefix (`/quotes/(?<segment>.*)` does not match a bare `/quotes` with no
+sub-path) — since this route only ever proxies one fixed endpoint, `SetPath=/api/quotes`
+is both simpler and correct here; `RewritePath` is for routes that forward a whole
+sub-path space.
+
+```bash
+# terminal 1
+cd circuit-breaker-service && mvn spring-boot:run
+# terminal 2
+cd gateway-service && mvn spring-boot:run               # port 8080
+
+curl -si localhost:8080/quotes                           # 200, X-Correlation-Id header on the response
+curl -s -X POST 'localhost:8081/api/chaos?failRate=100'  # break the downstream directly
+curl -si localhost:8080/quotes                            # still 200 — fallback JSON, gateway breaker caught it
+```
+
+`GatewayRoutingTest` drives the whole chain with a WireMock-backed upstream (no
+circuit-breaker-service needed): route + path rewrite + correlation-id propagation on the
+happy path, and a connection-reset fault to prove the route-level breaker's fallback fires.
 
 ---
 
 ## 3. Service Discovery
 
-> **Status: NOT YET IMPLEMENTED.** No Eureka client/server, Consul, or any registry dependency is present.
+> **Status: roadmap — not yet implemented.**
 
-**Intent:** Let services find each other's network locations dynamically at runtime, instead of hardcoding hostnames/ports, so instances can scale up/down or move without every caller needing reconfiguration.
+**Intent:** Let services find each other's network locations dynamically at runtime,
+instead of hardcoding hostnames/ports, so instances can scale up/down or move without
+every caller needing reconfiguration.
 
-**Problem it solves:** In a system with multiple instances of `order-service` behind a load balancer, and instances that come and go with autoscaling, hardcoded URLs break constantly. Each service instead **registers** itself with a discovery server on startup (and sends heartbeats), and callers **look up** a healthy instance by logical service name rather than a fixed address.
+**Problem it solves:** With multiple instances of a service behind a load balancer, and
+instances that come and go with autoscaling, hardcoded URLs break constantly. Each
+service instead **registers** with a discovery server on startup (sending heartbeats),
+and callers **look up** a healthy instance by logical service name.
 
-**How this would show up in this codebase, if implemented:** a `spring-cloud-starter-netflix-eureka-client` dependency with `@EnableDiscoveryClient`, paired with a `DiscoveryClient`-aware `RestClient`/`WebClient` or `@LoadBalanced RestTemplate` for calling other services by logical name (e.g. `http://order-service/orders/{id}`) instead of a literal host:port.
+**Planned shape:** a `service-registry` module (`spring-cloud-starter-netflix-eureka-server`,
+`@EnableEurekaServer`) plus `@EnableDiscoveryClient` on both existing services, replacing
+the gateway's fixed `uri: http://localhost:8081` with a `lb://circuit-breaker-service`
+load-balanced URI.
 
 ```mermaid
 sequenceDiagram
-    participant OrderSvc as Order Service
-    participant Registry as Discovery Server (e.g. Eureka)
-    participant InventorySvc as Inventory Service
+    participant CB as circuit-breaker-service
+    participant Registry as Eureka
+    participant GW as gateway-service
 
-    OrderSvc->>Registry: register("order-service", host:port)
-    InventorySvc->>Registry: register("inventory-service", host:port)
-    OrderSvc->>Registry: lookup("inventory-service")
-    Registry-->>OrderSvc: [inventory-service-1:8081, inventory-service-2:8082]
-    OrderSvc->>InventorySvc: GET /stock/{sku} (load-balanced pick)
+    CB->>Registry: register("circuit-breaker-service", host:port)
+    GW->>Registry: lookup("circuit-breaker-service")
+    Registry-->>GW: [instance-1:8081, instance-2:8091]
+    GW->>CB: GET /api/quotes (load-balanced pick)
 ```
-
----
 
 ## 4. Saga
 
-> **Status: NOT YET IMPLEMENTED.** No orchestrator, choreography event classes, or compensating-transaction logic exists in this module.
+> **Status: roadmap — not yet implemented.**
 
-**Intent:** Maintain data consistency across multiple services that each own their own database, when a single business transaction spans more than one service — without a distributed (two-phase-commit) transaction.
+**Intent:** Maintain data consistency across multiple services that each own their own
+database, when a single business transaction spans more than one service — without a
+distributed (two-phase-commit) transaction.
 
-**Problem it solves:** Placing an order might require debiting a payment service, reserving stock in an inventory service, and creating a shipment in a shipping service — three separate databases, three separate services. A classic ACID transaction can't span them. A saga instead runs the operation as a sequence of local transactions, each publishing an event/message that triggers the next step; if a later step fails, previously completed steps are undone via explicit **compensating transactions** (e.g. `ReleaseStockCommand` compensates `ReserveStockCommand`).
+**Problem it solves:** Placing an order might require debiting payment, reserving stock,
+and creating a shipment — three services, three databases. A saga runs the operation as a
+sequence of local transactions, each publishing an event that triggers the next step; if a
+later step fails, prior steps are undone via explicit **compensating transactions**.
 
-**How this would show up in this codebase, if implemented:** either an **orchestration-based** saga (a central `OrderSagaOrchestrator` service issuing commands to each participant and reacting to their replies) or a **choreography-based** saga (each service reacts to the previous service's event and publishes its own, with no central coordinator) — the choreography style is a direct application of the Observer pattern already documented in `gang-of-four-patterns/behavioral/observer`, just distributed across service boundaries via a broker (Kafka/RabbitMQ) instead of in-process `ApplicationEventPublisher`.
+**Planned shape:** either orchestration (a central `OrderSagaOrchestrator` issuing
+commands) or choreography (each service reacts to the previous service's event) — the
+choreography style is the Observer pattern from `gang-of-four-patterns/behavioral/observer`
+distributed across a broker instead of an in-process publisher.
 
 ```mermaid
 sequenceDiagram
-    participant Order as Order Service
-    participant Payment as Payment Service
-    participant Inventory as Inventory Service
+    participant Order as order-service
+    participant Payment as payment-service
+    participant Inventory as inventory-service
 
     Order->>Payment: DebitPayment
     Payment-->>Order: PaymentDebited
@@ -140,37 +184,33 @@ sequenceDiagram
     Inventory-->>Order: StockReservationFailed
     Note over Order,Payment: Compensating transaction
     Order->>Payment: RefundPayment
-    Payment-->>Order: PaymentRefunded
 ```
-
----
 
 ## 5. Externalized Configuration
 
-> **Status: NOT YET IMPLEMENTED.** `application.yaml` currently declares only `spring.application.name` — there is no Config Server, `bootstrap.yaml`, or environment-specific profile.
+> **Status: roadmap — not yet implemented.**
 
-**Intent:** Keep configuration (connection strings, feature flags, timeouts) outside the deployed artifact, so the same build can run in dev/staging/prod without rebuilding, and config changes don't require a redeploy.
+**Intent:** Keep configuration outside the deployed artifact, so the same build runs in
+dev/staging/prod without rebuilding, and config changes don't require a redeploy.
 
-**Problem it solves:** Baking environment-specific values into `application.yaml` inside the jar means every environment needs its own build, and rotating a secret or tuning a timeout requires a full redeploy. A Config Server (or equivalent — Consul KV, Vault, Kubernetes ConfigMaps) centralizes this, and services pull their configuration at startup (and optionally refresh it live via `/actuator/refresh` or Spring Cloud Bus).
-
-**How this would show up in this codebase, if implemented:** a `spring-cloud-config-client` dependency and a `spring.config.import=configserver:...` entry — functionally this is the same Composite pattern already documented for Spring's `Environment`/`PropertySource` hierarchy in `gang-of-four-patterns/structural/composite/spring/SpringCompositePropertySource.java`, extended so that one of the composed property sources is fetched remotely from a Config Server rather than only from local files.
+**Planned shape:** a `spring-cloud-config-server` module plus
+`spring.config.import=configserver:...` in both existing services — the same Composite
+pattern already used for Spring's `Environment`/`PropertySource` hierarchy, extended so one
+composed property source is fetched remotely rather than only from local files.
 
 ---
 
-## Suggested Package Layout
+## Running both services together
 
-If/when patterns above are implemented, the following package structure keeps each pattern isolated and self-documenting, mirroring the per-pattern-package convention already used in `gang-of-four-patterns`:
+```bash
+cd circuit-breaker-service && mvn spring-boot:run &    # :8081
+cd gateway-service && mvn spring-boot:run &              # :8080
 
-```
-com.org.pattern.microservicepattern
-├── MicroservicePatternApplication.java
-├── resilience/
-│   └── circuitbreaker/         (Circuit Breaker)
-├── gateway/                    (API Gateway — likely its own Spring Cloud Gateway module/service)
-├── discovery/                  (Service Discovery client registration + lookup)
-├── saga/
-│   └── orderfulfillment/       (Saga — orchestration or choreography)
-└── config/                     (Externalized Configuration client wiring)
+curl -si localhost:8080/quotes
 ```
 
-Each subpackage should follow the same documentation convention as the GoF module: a short table of files and roles, a "Key implementation detail" code excerpt, and a diagram — updated in this README as each pattern moves from *roadmap* to *implemented*.
+Or run the whole aggregator's tests in one shot from `microservice-patterns/`:
+
+```bash
+mvn test
+```

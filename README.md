@@ -20,7 +20,7 @@ learning-design-pattern/
 | Module | What it is | Status |
 |--------|-----------|--------|
 | [`gang-of-four-patterns`](gang-of-four-patterns/README.md) | All **23 classic Gang of Four patterns** (creational, structural, behavioral), each with a runnable Java implementation, and a "Spring Boot in Practice" note showing where the same pattern is already at work inside the Spring/Spring Cloud stack | **Implemented** — see module README for the full reference |
-| [`microservice-patterns`](microservice-patterns/README.md) | Intended home for distributed-systems patterns (circuit breaker, API gateway, service discovery, saga, externalized configuration) | **Scaffolding only** — a bare `@SpringBootApplication` with no pattern code yet; the module README documents the roadmap honestly rather than describing code that doesn't exist |
+| [`microservice-patterns`](microservice-patterns/README.md) | Distributed-systems patterns, each its own runnable service: **Circuit Breaker** (Resilience4j) and **API Gateway** (Spring Cloud Gateway) implemented; Service Discovery, Saga, Externalized Configuration documented as roadmap | **Partially implemented** — see module README |
 
 ---
 

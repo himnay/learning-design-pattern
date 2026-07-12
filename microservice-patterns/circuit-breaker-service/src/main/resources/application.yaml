@@ -1,0 +1,39 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: circuit-breaker-service
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      quoteService:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 10          # breaker decides over the last 10 recorded calls
+        minimum-number-of-calls: 5       # ...but only once at least 5 calls were recorded
+        failure-rate-threshold: 50       # open when >= 50% of the window failed
+        wait-duration-in-open-state: 5s  # stay OPEN for 5s, then allow trial calls
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+        record-exceptions:
+          - com.org.pattern.microservicepattern.circuitbreaker.downstream.DownstreamUnavailableException
+  retry:
+    instances:
+      quoteService:
+        max-attempts: 2                  # 1 original call + 1 retry per request
+        wait-duration: 100ms
+        retry-exceptions:
+          - com.org.pattern.microservicepattern.circuitbreaker.downstream.DownstreamUnavailableException
+        ignore-exceptions:
+          # when the breaker is OPEN, fail fast to the fallback instead of retrying
+          - io.github.resilience4j.circuitbreaker.CallNotPermittedException
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,circuitbreakers,circuitbreakerevents,retries,retryevents
+  endpoint:
+    health:
+      show-details: always
