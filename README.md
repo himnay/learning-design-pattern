@@ -29,8 +29,12 @@ learning-design-pattern/
 
 Design patterns are usually taught as one flat list, but they solve problems at two different scales, which is why this repository keeps them in separate modules:
 
+<ul>
+
 - **Gang of Four patterns** (`gang-of-four-patterns`) solve **object-level** design problems inside a single process: how objects are created, how they're composed into larger structures, and how they communicate. These are the patterns from the original 1994 *Design Patterns: Elements of Reusable Object-Oriented Software* book by Gamma, Helm, Johnson, and Vlissides.
 - **Microservice patterns** (`microservice-patterns`) solve **system-level** design problems that only appear once a single application is split into multiple independently deployable services communicating over a network: how a caller finds a service instance, how a slow dependency is prevented from cascading into an outage, how a business transaction that spans several databases stays consistent.
+
+</ul>
 
 A useful way to see the connection: several microservice patterns are literally a GoF pattern applied across a network boundary instead of within one JVM. For example, Chain of Responsibility inside one service (a servlet filter chain) becomes an API Gateway's filter pipeline across services; the Observer pattern inside one service (`ApplicationEventPublisher`/`@EventListener`) becomes a choreography-style Saga across services, mediated by a message broker instead of an in-process publisher. The `gang-of-four-patterns` README calls these connections out explicitly wherever the code demonstrates them.
 
@@ -77,5 +81,9 @@ cd microservice-patterns
 
 For the full pattern-by-pattern reference — intent, problem statement, exact classes involved, key code, Mermaid diagrams, and demo output — see:
 
+<ul>
+
 - **[`gang-of-four-patterns/README.md`](gang-of-four-patterns/README.md)** — all 23 GoF patterns, in depth
 - **[`microservice-patterns/README.md`](microservice-patterns/README.md)** — current status and pattern roadmap for the microservices module
+
+</ul>
