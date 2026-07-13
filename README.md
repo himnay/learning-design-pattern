@@ -24,7 +24,8 @@ learning-design-pattern/
 
 ---
 
-## Why two categories of patterns
+<a id="why-two-categories-of-patterns"></a>
+## 2. 🧩 Why two categories of patterns
 
 Design patterns are usually taught as one flat list, but they solve problems at two different scales, which is why this repository keeps them in separate modules:
 
@@ -57,7 +58,8 @@ flowchart TB
 
 ---
 
-## Getting started
+<a id="getting-started"></a>
+## 3. 🚀 Getting started
 
 Each module is a self-contained Spring Boot / Maven project with its own wrapper. From the module directory:
 
