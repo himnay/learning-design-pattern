@@ -1,6 +1,6 @@
 package com.org.pattern.creational.abstractfactory;
 
-public interface Checkbox {
+interface Checkbox {
     void render();
     void toggle();
 }
