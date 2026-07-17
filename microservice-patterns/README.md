@@ -5,13 +5,13 @@ Distributed-systems patterns, each as its own runnable Spring Boot module — as
 Maven aggregator (`packaging=pom`); each pattern below is its own child module with its
 own `mvn spring-boot:run`.
 
-| Module | Pattern | Status |
-|---|---|---|
-| [`circuit-breaker-service`](circuit-breaker-service/) | Circuit Breaker (Resilience4j) | **Implemented** |
-| [`gateway-service`](gateway-service/) | API Gateway (Spring Cloud Gateway) | **Implemented** |
-| — | Service Discovery | Roadmap |
-| — | Saga | Roadmap |
-| — | Externalized Configuration | Roadmap |
+| Module                                                | Pattern                            | Status          |
+|-------------------------------------------------------|------------------------------------|-----------------|
+| [`circuit-breaker-service`](circuit-breaker-service/) | Circuit Breaker (Resilience4j)     | **Implemented** |
+| [`gateway-service`](gateway-service/)                 | API Gateway (Spring Cloud Gateway) | **Implemented** |
+| —                                                     | Service Discovery                  | Roadmap         |
+| —                                                     | Saga                               | Roadmap         |
+| —                                                     | Externalized Configuration         | Roadmap         |
 
 ---
 
@@ -50,13 +50,13 @@ stateDiagram-v2
 
 ### What's actually in the code
 
-| File | Role |
-|---|---|
-| `api/QuoteController.java` | `GET /api/quotes` — the protected endpoint |
-| `api/ChaosController.java` | `POST /api/chaos?failRate=N` — dials how often the downstream fails, for demoing the breaker live |
-| `downstream/FlakyQuoteClient.java` | Simulated downstream; throws `DownstreamUnavailableException` at the configured fail rate |
-| `service/QuoteService.java` | `@CircuitBreaker(name="quoteService", fallbackMethod="fallback")` + `@Retry(name="quoteService")` wrapping the flaky call |
-| `application.yaml` | Resilience4j tuning: `sliding-window-size: 10`, `minimum-number-of-calls: 5`, `failure-rate-threshold: 50`, `wait-duration-in-open-state: 5s` |
+| File                               | Role                                                                                                                                          |
+|------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| `api/QuoteController.java`         | `GET /api/quotes` — the protected endpoint                                                                                                    |
+| `api/ChaosController.java`         | `POST /api/chaos?failRate=N` — dials how often the downstream fails, for demoing the breaker live                                             |
+| `downstream/FlakyQuoteClient.java` | Simulated downstream; throws `DownstreamUnavailableException` at the configured fail rate                                                     |
+| `service/QuoteService.java`        | `@CircuitBreaker(name="quoteService", fallbackMethod="fallback")` + `@Retry(name="quoteService")` wrapping the flaky call                     |
+| `application.yaml`                 | Resilience4j tuning: `sliding-window-size: 10`, `minimum-number-of-calls: 5`, `failure-rate-threshold: 50`, `wait-duration-in-open-state: 5s` |
 
 Boot 4.1 note: the standalone `spring-boot-starter-aop` wrapper artifact was dropped from
 the Boot BOM. Resilience4j's `@CircuitBreaker`/`@Retry` are `@Aspect` classes that still
@@ -93,11 +93,11 @@ flowchart LR
 
 ### What's actually in the code
 
-| File | Role |
-|---|---|
-| `application.yaml` | Route: `Path=/quotes/**` → `SetPath=/api/quotes` on `circuit-breaker-service`, wrapped in a route-level `CircuitBreaker` filter (`fallbackUri: forward:/fallback/quotes`) |
-| `filter/CorrelationIdGlobalFilter.java` | `GlobalFilter` — stamps every request with `X-Correlation-Id` (propagates an incoming one, or mints a UUID), echoed on the response so client/gateway/backend logs share one id |
-| `fallback/GatewayFallbackController.java` | Target of the route's `fallbackUri` — returns a friendly JSON payload instead of surfacing the raw connection error |
+| File                                      | Role                                                                                                                                                                            |
+|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `application.yaml`                        | Route: `Path=/quotes/**` → `SetPath=/api/quotes` on `circuit-breaker-service`, wrapped in a route-level `CircuitBreaker` filter (`fallbackUri: forward:/fallback/quotes`)       |
+| `filter/CorrelationIdGlobalFilter.java`   | `GlobalFilter` — stamps every request with `X-Correlation-Id` (propagates an incoming one, or mints a UUID), echoed on the response so client/gateway/backend logs share one id |
+| `fallback/GatewayFallbackController.java` | Target of the route's `fallbackUri` — returns a friendly JSON payload instead of surfacing the raw connection error                                                             |
 
 Uses `spring-cloud-starter-gateway-server-webflux` — the WebFlux-first rearchitected
 Gateway module (as opposed to the older `spring-cloud-starter-gateway`). One gotcha worth

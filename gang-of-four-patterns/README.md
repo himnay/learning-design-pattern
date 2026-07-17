@@ -11,21 +11,21 @@
 
 ## GoF → Spring Boot / Spring Cloud Mapping
 
-| GoF Pattern | Category | Spring / Spring Cloud usage |
-|-------------|----------|-----------------------------|
-| **Singleton** | Creational | Default `@Bean` / `@Component` scope in `ApplicationContext` |
-| **Factory Method** | Creational | `BeanFactory`, `ApplicationContext`, `@Bean` factory methods, `@ConditionalOnXxx` |
-| **Builder** | Creational | `UriComponentsBuilder`, `WebClient.Builder`, `RestClient.Builder`, `RestTemplateBuilder`, `SpringApplicationBuilder`, `AuthenticationManagerBuilder` |
-| **Prototype** | Creational | `@Scope("prototype")` beans, `Provider<T>` injection |
-| **Adapter** | Structural | `JdbcTemplate`, `MongoTemplate`, `RedisTemplate`, `KafkaTemplate`, `AmqpTemplate`, `RestTemplate` |
-| **Composite** | Structural | `CompositePropertySource`, Spring Environment property hierarchy, Spring Cloud Config |
-| **Decorator** | Structural | Resilience4j (`@CircuitBreaker`, `@Retry`, `@RateLimiter`, `@Bulkhead`), `java.io.*` streams |
-| **Proxy** | Structural | Spring AOP — `@Transactional`, `@Async`, `@Cacheable`, `@Secured`, CGLIB / JDK dynamic proxies |
-| **Chain of Responsibility** | Behavioral | Spring Security filter chain, Spring Cloud Gateway route filters, Servlet `Filter` chain |
-| **Observer** | Behavioral | `ApplicationEvent`, `@EventListener`, `ApplicationListener`, Spring Cloud Bus |
-| **State** | Behavioral | Spring State Machine (`spring-statemachine`) |
-| **Strategy** | Behavioral | `@ConditionalOnProperty`, `@Profile`, injecting `List<Strategy>`, Spring Security auth providers |
-| **Template Method** | Behavioral | `JdbcTemplate`, `RestTemplate`, `TransactionTemplate`, `JmsTemplate`, `MongoTemplate`, `RedisTemplate` |
+| GoF Pattern                 | Category   | Spring / Spring Cloud usage                                                                                                                          |
+|-----------------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Singleton**               | Creational | Default `@Bean` / `@Component` scope in `ApplicationContext`                                                                                         |
+| **Factory Method**          | Creational | `BeanFactory`, `ApplicationContext`, `@Bean` factory methods, `@ConditionalOnXxx`                                                                    |
+| **Builder**                 | Creational | `UriComponentsBuilder`, `WebClient.Builder`, `RestClient.Builder`, `RestTemplateBuilder`, `SpringApplicationBuilder`, `AuthenticationManagerBuilder` |
+| **Prototype**               | Creational | `@Scope("prototype")` beans, `Provider<T>` injection                                                                                                 |
+| **Adapter**                 | Structural | `JdbcTemplate`, `MongoTemplate`, `RedisTemplate`, `KafkaTemplate`, `AmqpTemplate`, `RestTemplate`                                                    |
+| **Composite**               | Structural | `CompositePropertySource`, Spring Environment property hierarchy, Spring Cloud Config                                                                |
+| **Decorator**               | Structural | Resilience4j (`@CircuitBreaker`, `@Retry`, `@RateLimiter`, `@Bulkhead`), `java.io.*` streams                                                         |
+| **Proxy**                   | Structural | Spring AOP — `@Transactional`, `@Async`, `@Cacheable`, `@Secured`, CGLIB / JDK dynamic proxies                                                       |
+| **Chain of Responsibility** | Behavioral | Spring Security filter chain, Spring Cloud Gateway route filters, Servlet `Filter` chain                                                             |
+| **Observer**                | Behavioral | `ApplicationEvent`, `@EventListener`, `ApplicationListener`, Spring Cloud Bus                                                                        |
+| **State**                   | Behavioral | Spring State Machine (`spring-statemachine`)                                                                                                         |
+| **Strategy**                | Behavioral | `@ConditionalOnProperty`, `@Profile`, injecting `List<Strategy>`, Spring Security auth providers                                                     |
+| **Template Method**         | Behavioral | `JdbcTemplate`, `RestTemplate`, `TransactionTemplate`, `JmsTemplate`, `MongoTemplate`, `RedisTemplate`                                               |
 
 ---
 
@@ -84,14 +84,14 @@
 
 **Package:** `creational/singleton`
 
-| File | Role |
-|------|------|
-| `DatabaseConnection.java` | Basic thread-safe singleton — double-checked locking + `volatile` |
-| `ReflectionSafeSingleton.java` | Guard against Reflection attack |
-| `ThreadSafeSingleton.java` | Double-checked locking + Initialization-on-Demand Holder |
-| `SerializationSafeSingleton.java` | Guard against Serialization attack via `readResolve()` |
-| `CloneSafeSingleton.java` | Guard against Cloning attack |
-| `SingletonEnum.java` | Enum-based singleton — immune to all four attacks |
+| File                              | Role                                                              |
+|-----------------------------------|-------------------------------------------------------------------|
+| `DatabaseConnection.java`         | Basic thread-safe singleton — double-checked locking + `volatile` |
+| `ReflectionSafeSingleton.java`    | Guard against Reflection attack                                   |
+| `ThreadSafeSingleton.java`        | Double-checked locking + Initialization-on-Demand Holder          |
+| `SerializationSafeSingleton.java` | Guard against Serialization attack via `readResolve()`            |
+| `CloneSafeSingleton.java`         | Guard against Cloning attack                                      |
+| `SingletonEnum.java`              | Enum-based singleton — immune to all four attacks                 |
 
 **Structure:**
 
@@ -313,12 +313,12 @@ Attack blocked: Cloning a Singleton is not allowed.
 - Best Singleton implementation in Java, as recommended by Joshua Bloch (*Effective Java*, Item 3)
 - The JVM gives you all four guarantees for free
 
-| Threat | How enum handles it |
-|--------|---------------------|
-| Reflection | JVM throws `IllegalArgumentException` if you try to reflectively instantiate an enum |
-| Multi-threading | Enum constants are class-loaded once; JVM class loading is thread-safe |
-| Serialization | Java serializes enums by name and always returns the existing constant on deserialization |
-| Cloning | `java.lang.Enum` does not implement `Cloneable`; `clone()` throws unconditionally |
+| Threat          | How enum handles it                                                                       |
+|-----------------|-------------------------------------------------------------------------------------------|
+| Reflection      | JVM throws `IllegalArgumentException` if you try to reflectively instantiate an enum      |
+| Multi-threading | Enum constants are class-loaded once; JVM class loading is thread-safe                    |
+| Serialization   | Java serializes enums by name and always returns the existing constant on deserialization |
+| Cloning         | `java.lang.Enum` does not implement `Cloneable`; `clone()` throws unconditionally         |
 
 ```java
 public enum SingletonEnum {
@@ -353,13 +353,13 @@ Reflection blocked by JVM: IllegalArgumentException
 
 #### Singleton Comparison Table
 
-| Variant | Thread-safe | Reflection-safe | Serialization-safe | Clone-safe | Notes |
-|---------|:-----------:|:---------------:|:-----------------:|:----------:|-------|
-| Naive (no sync) | No | No | No | No | Never use in production |
-| `synchronized getInstance()` | Yes | No | No | No | Works but slow — locks every call |
-| Double-Checked Locking | Yes | Partial* | No | No | Add constructor guard for reflection |
-| Holder idiom | Yes | Partial* | No | No | Cleanest non-enum approach |
-| Enum | Yes | **Yes** | **Yes** | **Yes** | Recommended default |
+| Variant                      | Thread-safe | Reflection-safe | Serialization-safe | Clone-safe | Notes                                |
+|------------------------------|:-----------:|:---------------:|:------------------:|:----------:|--------------------------------------|
+| Naive (no sync)              |     No      |       No        |         No         |     No     | Never use in production              |
+| `synchronized getInstance()` |     Yes     |       No        |         No         |     No     | Works but slow — locks every call    |
+| Double-Checked Locking       |     Yes     |    Partial*     |         No         |     No     | Add constructor guard for reflection |
+| Holder idiom                 |     Yes     |    Partial*     |         No         |     No     | Cleanest non-enum approach           |
+| Enum                         |     Yes     |     **Yes**     |      **Yes**       |  **Yes**   | Recommended default                  |
 
 \* Reflection-safe only if you add the `if (instance != null) throw` guard in the constructor.
 
@@ -407,12 +407,12 @@ class OrderService {
 
 **Package:** `creational/factorymethod`
 
-| File | Role |
-|------|------|
-| `Notification.java` | Product interface |
-| `EmailNotification.java` | Concrete product |
-| `SmsNotification.java` | Concrete product |
-| `PushNotification.java` | Concrete product |
+| File                       | Role                                         |
+|----------------------------|----------------------------------------------|
+| `Notification.java`        | Product interface                            |
+| `EmailNotification.java`   | Concrete product                             |
+| `SmsNotification.java`     | Concrete product                             |
+| `PushNotification.java`    | Concrete product                             |
 | `NotificationFactory.java` | Factory with static `create(channel)` method |
 
 **Structure:**
@@ -492,16 +492,16 @@ public NotificationSender smsSender() { return new SmsSender(); }
 
 **Package:** `creational/abstractfactory`
 
-| File | Role |
-|------|------|
-| `GUIFactory.java` | Abstract factory interface |
-| `WindowsFactory.java` | Concrete factory for Windows |
-| `MacFactory.java` | Concrete factory for macOS |
-| `Button.java` | Abstract product |
-| `Checkbox.java` | Abstract product |
-| `WindowsButton.java`, `MacButton.java` | Concrete products |
-| `WindowsCheckbox.java`, `MacCheckbox.java` | Concrete products |
-| `Application.java` | Client that uses the factory |
+| File                                       | Role                         |
+|--------------------------------------------|------------------------------|
+| `GUIFactory.java`                          | Abstract factory interface   |
+| `WindowsFactory.java`                      | Concrete factory for Windows |
+| `MacFactory.java`                          | Concrete factory for macOS   |
+| `Button.java`                              | Abstract product             |
+| `Checkbox.java`                            | Abstract product             |
+| `WindowsButton.java`, `MacButton.java`     | Concrete products            |
+| `WindowsCheckbox.java`, `MacCheckbox.java` | Concrete products            |
+| `Application.java`                         | Client that uses the factory |
 
 **Structure:**
 
@@ -570,8 +570,8 @@ Rendering macOS-style checkbox [ ]
 
 **Package:** `creational/builder`
 
-| File | Role |
-|------|------|
+| File         | Role                               |
+|--------------|------------------------------------|
 | `Pizza.java` | Product with inner `Builder` class |
 
 **Structure:**
@@ -670,12 +670,12 @@ new SpringApplicationBuilder()
 
 **Package:** `creational/prototype`
 
-| File | Role |
-|------|------|
-| `Shape.java` | Abstract prototype with copy constructor |
-| `Circle.java` | Concrete prototype |
-| `Rectangle.java` | Concrete prototype |
-| `ShapeRegistry.java` | Cache of prototype instances |
+| File                 | Role                                     |
+|----------------------|------------------------------------------|
+| `Shape.java`         | Abstract prototype with copy constructor |
+| `Circle.java`        | Concrete prototype                       |
+| `Rectangle.java`     | Concrete prototype                       |
+| `ShapeRegistry.java` | Cache of prototype instances             |
 
 **Structure:**
 
@@ -787,13 +787,13 @@ ShoppingCart fresh = cartProvider.get();  // new instance each time
 
 **Package:** `structural/adapter`
 
-| File | Role |
-|------|------|
-| `MediaPlayer.java` | Target interface (client uses this) |
-| `AdvancedMediaPlayer.java` | Adaptee interface (incompatible) |
-| `VlcPlayer.java`, `Mp4Player.java` | Concrete adaptees |
-| `MediaAdapter.java` | Adapter — wraps adaptee, implements target |
-| `AudioPlayer.java` | Client — uses `MediaPlayer`, delegates to adapter |
+| File                               | Role                                              |
+|------------------------------------|---------------------------------------------------|
+| `MediaPlayer.java`                 | Target interface (client uses this)               |
+| `AdvancedMediaPlayer.java`         | Adaptee interface (incompatible)                  |
+| `VlcPlayer.java`, `Mp4Player.java` | Concrete adaptees                                 |
+| `MediaAdapter.java`                | Adapter — wraps adaptee, implements target        |
+| `AudioPlayer.java`                 | Client — uses `MediaPlayer`, delegates to adapter |
 
 **Structure:**
 
@@ -880,12 +880,12 @@ List<Order> orders = jdbcTemplate.query(
 
 **Package:** `structural/bridge`
 
-| File | Role |
-|------|------|
-| `DrawingAPI.java` | Implementor interface |
-| `SvgDrawingAPI.java`, `CanvasDrawingAPI.java` | Concrete implementors |
-| `Shape.java` | Abstraction — holds reference to `DrawingAPI` |
-| `CircleShape.java` | Refined abstraction |
+| File                                          | Role                                          |
+|-----------------------------------------------|-----------------------------------------------|
+| `DrawingAPI.java`                             | Implementor interface                         |
+| `SvgDrawingAPI.java`, `CanvasDrawingAPI.java` | Concrete implementors                         |
+| `Shape.java`                                  | Abstraction — holds reference to `DrawingAPI` |
+| `CircleShape.java`                            | Refined abstraction                           |
 
 **Structure:**
 
@@ -952,11 +952,11 @@ SVG: <circle cx='10.0' cy='20.0' r='10.0'/>
 
 **Package:** `structural/composite`
 
-| File | Role |
-|------|------|
-| `FileSystemComponent.java` | Component interface |
-| `File.java` | Leaf node |
-| `Directory.java` | Composite node — contains children |
+| File                       | Role                               |
+|----------------------------|------------------------------------|
+| `FileSystemComponent.java` | Component interface                |
+| `File.java`                | Leaf node                          |
+| `Directory.java`           | Composite node — contains children |
 
 **Structure:**
 
@@ -1044,12 +1044,12 @@ private int port;
 
 **Package:** `structural/decorator`
 
-| File | Role |
-|------|------|
-| `Coffee.java` | Component interface |
-| `SimpleCoffee.java` | Concrete component |
-| `CoffeeDecorator.java` | Abstract decorator — wraps a `Coffee` |
-| `MilkDecorator.java`, `SugarDecorator.java`, `VanillaDecorator.java` | Concrete decorators |
+| File                                                                 | Role                                  |
+|----------------------------------------------------------------------|---------------------------------------|
+| `Coffee.java`                                                        | Component interface                   |
+| `SimpleCoffee.java`                                                  | Concrete component                    |
+| `CoffeeDecorator.java`                                               | Abstract decorator — wraps a `Coffee` |
+| `MilkDecorator.java`, `SugarDecorator.java`, `VanillaDecorator.java` | Concrete decorators                   |
 
 **Structure:**
 
@@ -1145,10 +1145,10 @@ new BufferedReader(new InputStreamReader(new FileInputStream("data.txt")))
 
 **Package:** `structural/facade`
 
-| File | Role |
-|------|------|
-| `DVDPlayer.java`, `Projector.java`, `SoundSystem.java`, `Lights.java` | Complex subsystem components |
-| `HomeTheaterFacade.java` | Facade — orchestrates all subsystems |
+| File                                                                  | Role                                 |
+|-----------------------------------------------------------------------|--------------------------------------|
+| `DVDPlayer.java`, `Projector.java`, `SoundSystem.java`, `Lights.java` | Complex subsystem components         |
+| `HomeTheaterFacade.java`                                              | Facade — orchestrates all subsystems |
 
 **Structure:**
 
@@ -1214,12 +1214,12 @@ DVD Player: Playing 'Inception'
 
 **Package:** `structural/flyweight`
 
-| File | Role |
-|------|------|
-| `TreeType.java` | Flyweight — shared intrinsic state (name, color, texture) |
-| `Tree.java` | Context — holds extrinsic state (x, y) + reference to flyweight |
-| `TreeFactory.java` | Flyweight factory with cache |
-| `Forest.java` | Client |
+| File               | Role                                                            |
+|--------------------|-----------------------------------------------------------------|
+| `TreeType.java`    | Flyweight — shared intrinsic state (name, color, texture)       |
+| `Tree.java`        | Context — holds extrinsic state (x, y) + reference to flyweight |
+| `TreeFactory.java` | Flyweight factory with cache                                    |
+| `Forest.java`      | Client                                                          |
 
 **Structure:**
 
@@ -1286,10 +1286,10 @@ Unique TreeType objects created: 2 (for 8 trees)
 
 **Package:** `structural/proxy`
 
-| File | Role |
-|------|------|
-| `Image.java` | Subject interface |
-| `RealImage.java` | Real subject — expensive to create |
+| File              | Role                                            |
+|-------------------|-------------------------------------------------|
+| `Image.java`      | Subject interface                               |
+| `RealImage.java`  | Real subject — expensive to create              |
 | `ProxyImage.java` | Proxy — controls access, lazy-loads `RealImage` |
 
 **Structure:**
@@ -1383,11 +1383,11 @@ class OrderService {
 
 **Package:** `behavioral/chainofresponsibility`
 
-| File | Role |
-|------|------|
-| `SupportHandler.java` | Abstract handler with `setNext()` and `escalate()` |
-| `SupportTicket.java` | Request object |
-| `Level1Support.java`, `Level2Support.java`, `Level3Support.java` | Concrete handlers |
+| File                                                             | Role                                               |
+|------------------------------------------------------------------|----------------------------------------------------|
+| `SupportHandler.java`                                            | Abstract handler with `setNext()` and `escalate()` |
+| `SupportTicket.java`                                             | Request object                                     |
+| `Level1Support.java`, `Level2Support.java`, `Level3Support.java` | Concrete handlers                                  |
 
 **Structure:**
 
@@ -1472,12 +1472,12 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 **Package:** `behavioral/command`
 
-| File | Role |
-|------|------|
-| `Command.java` | Command interface with `execute()` and `undo()` |
-| `Light.java` | Receiver |
-| `LightOnCommand.java`, `LightOffCommand.java` | Concrete commands |
-| `RemoteControl.java` | Invoker — maintains command history |
+| File                                          | Role                                            |
+|-----------------------------------------------|-------------------------------------------------|
+| `Command.java`                                | Command interface with `execute()` and `undo()` |
+| `Light.java`                                  | Receiver                                        |
+| `LightOnCommand.java`, `LightOffCommand.java` | Concrete commands                               |
+| `RemoteControl.java`                          | Invoker — maintains command history             |
 
 **Structure:**
 
@@ -1542,9 +1542,9 @@ Undo -> Bedroom light: OFF
 
 **Package:** `behavioral/iterator`
 
-| File | Role |
-|------|------|
-| `Book.java` | Element type |
+| File                  | Role                                                                            |
+|-----------------------|---------------------------------------------------------------------------------|
+| `Book.java`           | Element type                                                                    |
 | `BookCollection.java` | Aggregate — implements `Iterable<Book>`, provides forward and reverse iterators |
 
 **Structure:**
@@ -1595,11 +1595,11 @@ while (iter.hasNext()) { System.out.println(iter.next()); }
 
 **Package:** `behavioral/mediator`
 
-| File | Role |
-|------|------|
+| File                | Role               |
+|---------------------|--------------------|
 | `ChatMediator.java` | Mediator interface |
-| `ChatRoom.java` | Concrete mediator |
-| `ChatUser.java` | Abstract colleague |
+| `ChatRoom.java`     | Concrete mediator  |
+| `ChatUser.java`     | Abstract colleague |
 | `ConcreteUser.java` | Concrete colleague |
 
 **Structure:**
@@ -1657,11 +1657,11 @@ public void sendMessage(String message, ChatUser sender) {
 
 **Package:** `behavioral/memento`
 
-| File | Role |
-|------|------|
+| File                 | Role                                            |
+|----------------------|-------------------------------------------------|
 | `EditorMemento.java` | Memento — stores `content` and `cursorPosition` |
-| `TextEditor.java` | Originator — creates and restores mementos |
-| `EditorHistory.java` | Caretaker — manages the undo stack |
+| `TextEditor.java`    | Originator — creates and restores mementos      |
+| `EditorHistory.java` | Caretaker — manages the undo stack              |
 
 **Structure:**
 
@@ -1728,11 +1728,11 @@ Undo -> Editor{content='Hello', cursor=5}
 
 **Package:** `behavioral/observer`
 
-| File | Role |
-|------|------|
-| `StockObserver.java` | Observer interface |
-| `StockMarket.java` | Subject — maintains subscriber list, publishes changes |
-| `StockTrader.java` | Concrete observer |
+| File                 | Role                                                   |
+|----------------------|--------------------------------------------------------|
+| `StockObserver.java` | Observer interface                                     |
+| `StockMarket.java`   | Subject — maintains subscriber list, publishes changes |
+| `StockTrader.java`   | Concrete observer                                      |
 
 **Structure:**
 
@@ -1828,11 +1828,11 @@ public void onReady() { /* app fully started */ }
 
 **Package:** `behavioral/state`
 
-| File | Role |
-|------|------|
-| `TrafficLightState.java` | State interface |
-| `RedState.java`, `GreenState.java`, `YellowState.java` | Concrete states |
-| `TrafficLight.java` | Context — delegates behavior to current state |
+| File                                                   | Role                                          |
+|--------------------------------------------------------|-----------------------------------------------|
+| `TrafficLightState.java`                               | State interface                               |
+| `RedState.java`, `GreenState.java`, `YellowState.java` | Concrete states                               |
+| `TrafficLight.java`                                    | Context — delegates behavior to current state |
 
 **Structure:**
 
@@ -1924,13 +1924,13 @@ stateMachine.sendEvent(OrderEvent.SHIP);        // PAID → PROCESSING → SHIPP
 
 **Package:** `behavioral/strategy`
 
-| File | Role |
-|------|------|
-| `SortStrategy.java` | Strategy interface |
-| `BubbleSortStrategy.java` | Concrete strategy |
-| `QuickSortStrategy.java` | Concrete strategy |
-| `MergeSortStrategy.java` | Concrete strategy |
-| `Sorter.java` | Context — uses a `SortStrategy` |
+| File                      | Role                            |
+|---------------------------|---------------------------------|
+| `SortStrategy.java`       | Strategy interface              |
+| `BubbleSortStrategy.java` | Concrete strategy               |
+| `QuickSortStrategy.java`  | Concrete strategy               |
+| `MergeSortStrategy.java`  | Concrete strategy               |
+| `Sorter.java`             | Context — uses a `SortStrategy` |
 
 **Structure:**
 
@@ -2024,10 +2024,10 @@ http.authenticationProvider(jwtProvider)
 
 **Package:** `behavioral/templatemethod`
 
-| File | Role |
-|------|------|
-| `DataMiner.java` | Abstract class with `mine()` template method |
-| `CsvDataMiner.java` | Overrides `extractData` and `parseData` for CSV |
+| File                | Role                                                           |
+|---------------------|----------------------------------------------------------------|
+| `DataMiner.java`    | Abstract class with `mine()` template method                   |
+| `CsvDataMiner.java` | Overrides `extractData` and `parseData` for CSV                |
 | `PdfDataMiner.java` | Overrides `extractData`, `parseData`, and `sendReport` for PDF |
 
 **Structure:**
@@ -2130,13 +2130,13 @@ interface OrderClient {
 
 **Package:** `behavioral/visitor`
 
-| File | Role |
-|------|------|
-| `ShapeVisitor.java` | Visitor interface |
-| `VisitableShape.java` | Element interface with `accept(ShapeVisitor)` |
-| `Circle.java`, `Rectangle.java`, `Triangle.java` | Concrete elements |
-| `AreaCalculatorVisitor.java` | Concrete visitor |
-| `PerimeterCalculatorVisitor.java` | Concrete visitor |
+| File                                             | Role                                          |
+|--------------------------------------------------|-----------------------------------------------|
+| `ShapeVisitor.java`                              | Visitor interface                             |
+| `VisitableShape.java`                            | Element interface with `accept(ShapeVisitor)` |
+| `Circle.java`, `Rectangle.java`, `Triangle.java` | Concrete elements                             |
+| `AreaCalculatorVisitor.java`                     | Concrete visitor                              |
+| `PerimeterCalculatorVisitor.java`                | Concrete visitor                              |
 
 **Structure:**
 
@@ -2198,13 +2198,13 @@ Triangle perimeter: 12.00
 
 **Package:** `behavioral/interpreter`
 
-| File | Role |
-|------|------|
-| `Expression.java` | Abstract expression |
+| File                      | Role                                      |
+|---------------------------|-------------------------------------------|
+| `Expression.java`         | Abstract expression                       |
 | `TerminalExpression.java` | Leaf — checks if context contains a token |
-| `OrExpression.java` | Non-terminal — evaluates `left OR right` |
-| `AndExpression.java` | Non-terminal — evaluates `left AND right` |
-| `InterpreterDemo.java` | Builds and evaluates the expression tree |
+| `OrExpression.java`       | Non-terminal — evaluates `left OR right`  |
+| `AndExpression.java`      | Non-terminal — evaluates `left AND right` |
+| `InterpreterDemo.java`    | Builds and evaluates the expression tree  |
 
 **Structure:**
 
@@ -2252,31 +2252,31 @@ Context: ADMIN SUSPENDED       -> Access: false
 
 ## Pattern Summary Table
 
-| # | Pattern | Category | Key Intent |
-|---|---------|----------|-----------|
-| 1 | Singleton | Creational | One instance globally |
-| 2 | Factory Method | Creational | Delegate instantiation to factory |
-| 3 | Abstract Factory | Creational | Create families of related objects |
-| 4 | Builder | Creational | Step-by-step complex object construction |
-| 5 | Prototype | Creational | Clone existing objects |
-| 6 | Adapter | Structural | Make incompatible interfaces compatible |
-| 7 | Bridge | Structural | Decouple abstraction from implementation |
-| 8 | Composite | Structural | Uniform tree structures |
-| 9 | Decorator | Structural | Dynamically add behavior |
-| 10 | Facade | Structural | Simplify complex subsystem |
-| 11 | Flyweight | Structural | Share fine-grained objects |
-| 12 | Proxy | Structural | Control object access |
-| 13 | Chain of Responsibility | Behavioral | Pass request along handler chain |
-| 14 | Command | Behavioral | Encapsulate requests as objects |
-| 15 | Iterator | Behavioral | Sequential access to collection |
-| 16 | Mediator | Behavioral | Centralize object communication |
-| 17 | Memento | Behavioral | Capture and restore object state |
-| 18 | Observer | Behavioral | Notify dependents of state changes |
-| 19 | State | Behavioral | Change behavior with state |
-| 20 | Strategy | Behavioral | Swap algorithms at runtime |
-| 21 | Template Method | Behavioral | Define algorithm skeleton |
-| 22 | Visitor | Behavioral | Add operations without modifying classes |
-| 23 | Interpreter | Behavioral | Evaluate grammar/expressions |
+| #   | Pattern                 | Category   | Key Intent                               |
+|-----|-------------------------|------------|------------------------------------------|
+| 1   | Singleton               | Creational | One instance globally                    |
+| 2   | Factory Method          | Creational | Delegate instantiation to factory        |
+| 3   | Abstract Factory        | Creational | Create families of related objects       |
+| 4   | Builder                 | Creational | Step-by-step complex object construction |
+| 5   | Prototype               | Creational | Clone existing objects                   |
+| 6   | Adapter                 | Structural | Make incompatible interfaces compatible  |
+| 7   | Bridge                  | Structural | Decouple abstraction from implementation |
+| 8   | Composite               | Structural | Uniform tree structures                  |
+| 9   | Decorator               | Structural | Dynamically add behavior                 |
+| 10  | Facade                  | Structural | Simplify complex subsystem               |
+| 11  | Flyweight               | Structural | Share fine-grained objects               |
+| 12  | Proxy                   | Structural | Control object access                    |
+| 13  | Chain of Responsibility | Behavioral | Pass request along handler chain         |
+| 14  | Command                 | Behavioral | Encapsulate requests as objects          |
+| 15  | Iterator                | Behavioral | Sequential access to collection          |
+| 16  | Mediator                | Behavioral | Centralize object communication          |
+| 17  | Memento                 | Behavioral | Capture and restore object state         |
+| 18  | Observer                | Behavioral | Notify dependents of state changes       |
+| 19  | State                   | Behavioral | Change behavior with state               |
+| 20  | Strategy                | Behavioral | Swap algorithms at runtime               |
+| 21  | Template Method         | Behavioral | Define algorithm skeleton                |
+| 22  | Visitor                 | Behavioral | Add operations without modifying classes |
+| 23  | Interpreter             | Behavioral | Evaluate grammar/expressions             |
 
 ---
 
