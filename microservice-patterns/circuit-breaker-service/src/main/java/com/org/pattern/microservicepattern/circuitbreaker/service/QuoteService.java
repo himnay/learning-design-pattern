@@ -34,8 +34,8 @@ public class QuoteService {
         this.flakyQuoteClient = flakyQuoteClient;
     }
 
-    @Retry(name = BACKEND, fallbackMethod = "quoteFallback")
     @CircuitBreaker(name = BACKEND)
+    @Retry(name = BACKEND, fallbackMethod = "quoteFallback")
     public Quote getQuote() {
         return flakyQuoteClient.fetchQuote();
     }

@@ -126,9 +126,9 @@ public class SpringAopProxy {
               //   → proxy commits (or rolls back)
 
             Resilience4j adds more proxy layers (decorator chain):
-              @CircuitBreaker(name="orders")
-              @RateLimiter(name="orders")
               @Retry(name="orders")
+              @RateLimiter(name="orders")
+              @CircuitBreaker(name="orders")
               public String callDownstream() { ... }
               // Each annotation wraps the method in another proxy layer
             """);

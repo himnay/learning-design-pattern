@@ -41,24 +41,24 @@ interface PaymentStrategy {
 // ── Concrete strategies ───────────────────────────────────────────────────────
 @Component("CARD")
 class CardPaymentStrategy implements PaymentStrategy {
-    @Override public String getType() { return "CARD"; }
     @Override public String pay(double amount) {
+    @Override public String getType() { return "CARD"; }
         return String.format("Card charged: $%.2f", amount);
     }
 }
 
 @Component("PAYPAL")
 class PayPalPaymentStrategy implements PaymentStrategy {
-    @Override public String getType() { return "PAYPAL"; }
     @Override public String pay(double amount) {
+    @Override public String getType() { return "PAYPAL"; }
         return String.format("PayPal transfer: $%.2f", amount);
     }
 }
 
 @Component("CRYPTO")
 class CryptoPaymentStrategy implements PaymentStrategy {
-    @Override public String getType() { return "CRYPTO"; }
     @Override public String pay(double amount) {
+    @Override public String getType() { return "CRYPTO"; }
         return String.format("Crypto transaction: $%.2f (~0.00042 BTC)", amount);
     }
 }

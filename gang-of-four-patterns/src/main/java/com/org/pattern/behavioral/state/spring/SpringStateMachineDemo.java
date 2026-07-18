@@ -33,8 +33,8 @@ interface OrderStateHandler {
 }
 
 class PendingState implements OrderStateHandler {
-    @Override public OrderState getState() { return OrderState.PENDING; }
     @Override public OrderState on(OrderEvent event, String orderId) {
+    @Override public OrderState getState() { return OrderState.PENDING; }
         return switch (event) {
             case PAY    -> { System.out.println("[PENDING→PAID] payment received for " + orderId); yield OrderState.PAID; }
             case CANCEL -> { System.out.println("[PENDING→CANCELLED] order cancelled");             yield OrderState.CANCELLED; }
@@ -55,8 +55,8 @@ class PaidState implements OrderStateHandler {
 }
 
 class ProcessingState implements OrderStateHandler {
-    @Override public OrderState getState() { return OrderState.PROCESSING; }
     @Override public OrderState on(OrderEvent event, String orderId) {
+    @Override public OrderState getState() { return OrderState.PROCESSING; }
         return switch (event) {
             case SHIP -> { System.out.println("[PROCESSING→SHIPPED] tracking number assigned"); yield OrderState.SHIPPED; }
             default   -> { System.out.println("[PROCESSING] invalid event: " + event);          yield OrderState.PROCESSING; }
@@ -75,8 +75,8 @@ class TerminalState implements OrderStateHandler {
 }
 
 class ShippedState implements OrderStateHandler {
-    @Override public OrderState getState() { return OrderState.SHIPPED; }
     @Override public OrderState on(OrderEvent event, String orderId) {
+    @Override public OrderState getState() { return OrderState.SHIPPED; }
         return switch (event) {
             case DELIVER -> { System.out.println("[SHIPPED→DELIVERED] delivery confirmed"); yield OrderState.DELIVERED; }
             default      -> { System.out.println("[SHIPPED] invalid event: " + event);     yield OrderState.SHIPPED; }

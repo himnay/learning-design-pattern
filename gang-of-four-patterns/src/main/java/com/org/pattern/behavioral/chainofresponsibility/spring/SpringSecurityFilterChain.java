@@ -96,8 +96,8 @@ class AuditLoggingFilter extends SecurityFilter {
 }
 
 // ── Spring Boot Servlet filter equivalent (what @Component filter looks like) ──
-@Component
 @Order(1)
+@Component
 class JwtAuthenticationFilter implements Filter {
 
     @Override
@@ -117,8 +117,8 @@ class JwtAuthenticationFilter implements Filter {
         chain.doFilter(req, res);
     }
 
-    @Override public void init(FilterConfig cfg) {}
     @Override public void destroy() {}
+    @Override public void init(FilterConfig cfg) {}
 }
 
 public class SpringSecurityFilterChain {

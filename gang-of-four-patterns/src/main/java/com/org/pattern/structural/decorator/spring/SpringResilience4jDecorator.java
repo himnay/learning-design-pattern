@@ -145,9 +145,9 @@ public class SpringResilience4jDecorator {
         System.out.println("""
 
             Spring Boot equivalent using annotations (resilience4j-spring-boot3):
-              @CircuitBreaker(name="inventory", fallbackMethod="stockFallback")
               @Retry(name="inventory")
               @RateLimiter(name="inventory")
+              @CircuitBreaker(name="inventory", fallbackMethod="stockFallback")
               public String checkStock(String productId) { ... }
 
               public String stockFallback(String productId, Exception e) {
