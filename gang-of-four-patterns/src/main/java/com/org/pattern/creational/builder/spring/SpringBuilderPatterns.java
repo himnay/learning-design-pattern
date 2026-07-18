@@ -20,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 public class SpringBuilderPatterns {
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Spring Builder Pattern Demo ===");
 

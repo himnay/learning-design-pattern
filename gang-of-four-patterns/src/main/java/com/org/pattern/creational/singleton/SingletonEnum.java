@@ -28,10 +28,12 @@ public enum SingletonEnum {
     public void setSomeValue(int value) { this.someValue = value; }
     public String getConnectionUrl() { return connectionUrl; }
 
+    /** Does work. */
     public void doWork() {
         System.out.println("SingletonEnum.doWork() — value=" + someValue + ", url=" + connectionUrl);
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Singleton — Enum Variant Demo ===");
 

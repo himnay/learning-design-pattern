@@ -44,6 +44,7 @@ class ProductRepository {
     }
 
     // Clean 1-line API — JdbcTemplate adapts this to full JDBC lifecycle
+    /** Finds by price below. */
     public List<Product> findByPriceBelow(double maxPrice) {
         RowMapper<Product> mapper = (rs, row) ->
                 new Product(rs.getLong("id"), rs.getString("name"), rs.getDouble("price"));
@@ -51,6 +52,7 @@ class ProductRepository {
         return jdbc.query("SELECT id, name, price FROM product WHERE price < ?", mapper, maxPrice);
     }
 
+    /** Saves. */
     public int save(Product p) {
         return jdbc.update("INSERT INTO product (name, price) VALUES (?, ?)", p.name(), p.price());
     }
@@ -58,6 +60,7 @@ class ProductRepository {
 
 public class SpringJdbcAdapter {
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Spring Adapter Pattern — JdbcTemplate Demo ===");
         System.out.println("""

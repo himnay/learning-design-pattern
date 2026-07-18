@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 @RestController
 public class GatewayFallbackController {
 
+    /** Returns the quotes fallback. */
     @GetMapping("/fallback/quotes")
     public Mono<Map<String, String>> quotesFallback() {
         return Mono.just(Map.of(

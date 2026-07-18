@@ -42,6 +42,7 @@ class NotificationConfig {
 
     // @Bean method = Factory Method: the caller asks for NotificationSender,
     // this method decides WHICH concrete type to return.
+    /** Defines the notification sender bean. */
     @Bean
     public NotificationSender notificationSender() {
         String channel = System.getProperty("notification.channel", "email");
@@ -64,6 +65,7 @@ class AlertDispatcher {
         this.beanFactory = beanFactory;
     }
 
+    /** Dispatches. */
     public void dispatch(String message) {
         // getBean() is the factory method call — Spring decides the concrete type
         NotificationSender sender = beanFactory.getBean(NotificationSender.class);
@@ -73,6 +75,7 @@ class AlertDispatcher {
 
 public class SpringBeanFactory {
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Spring Factory Method Pattern Demo ===");
         System.out.println("""
@@ -80,6 +83,7 @@ public class SpringBeanFactory {
               NotificationSender sender = context.getBean(NotificationSender.class);
               // Spring returns EmailSender or SmsSender based on config — caller never knows which
 
+              /** Defines the notification sender bean. */
             @Bean factory methods make the decision:
               @Bean
               public NotificationSender notificationSender() {
@@ -87,6 +91,7 @@ public class SpringBeanFactory {
               }
 
             Spring Cloud adds conditional factories:
+              /** Defines the feature service bean. */
               @Bean @ConditionalOnProperty(name="feature.x", havingValue="true")
               public FeatureService featureService() { return new FeatureServiceImpl(); }
             """);

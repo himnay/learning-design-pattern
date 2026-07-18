@@ -42,6 +42,7 @@ abstract class SecurityFilter {
         return next;
     }
 
+    /** Handles. */
     public abstract boolean handle(ApiRequest request);
 
     protected boolean proceed(ApiRequest request) {
@@ -117,12 +118,13 @@ class JwtAuthenticationFilter implements Filter {
         chain.doFilter(req, res);
     }
 
-    @Override public void destroy() {}
     @Override public void init(FilterConfig cfg) {}
+    @Override public void destroy() {}
 }
 
 public class SpringSecurityFilterChain {
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Spring Chain of Responsibility — Security Filter Chain Demo ===");
 
@@ -146,6 +148,7 @@ public class SpringSecurityFilterChain {
         System.out.println("""
 
             Spring Security HttpSecurity configuration (SecurityFilterChain bean):
+              /** Defines the filter chain bean. */
               @Bean
               public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                   return http

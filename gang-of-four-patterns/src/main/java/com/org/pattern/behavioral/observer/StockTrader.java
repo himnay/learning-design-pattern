@@ -19,6 +19,7 @@ public class StockTrader implements StockObserver {
         }
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Observer Pattern Demo ===");
         StockMarket aapl = new StockMarket("AAPL", 180.00);

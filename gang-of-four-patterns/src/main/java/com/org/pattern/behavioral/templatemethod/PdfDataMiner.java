@@ -19,6 +19,7 @@ public class PdfDataMiner extends DataMiner {
         System.out.println("PDF Report (emailed): " + analysis);
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Template Method Pattern Demo ===");
         DataMiner csvMiner = new CsvDataMiner();

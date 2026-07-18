@@ -121,6 +121,7 @@ class RateLimiterDecorator implements InventoryService {
 
 public class SpringResilience4jDecorator {
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Spring Decorator Pattern — Resilience4j Demo ===");
 
@@ -145,11 +146,13 @@ public class SpringResilience4jDecorator {
         System.out.println("""
 
             Spring Boot equivalent using annotations (resilience4j-spring-boot3):
+              /** Checks stock. */
               @Retry(name="inventory")
               @RateLimiter(name="inventory")
               @CircuitBreaker(name="inventory", fallbackMethod="stockFallback")
               public String checkStock(String productId) { ... }
 
+              /** Returns the stock fallback. */
               public String stockFallback(String productId, Exception e) {
                   return "FALLBACK:OUT_OF_STOCK";
               }

@@ -14,6 +14,7 @@ public class HomeTheaterFacade {
         this.lights = lights;
     }
 
+    /** Handles watch movie. */
     public void watchMovie(String movie) {
         System.out.println("--- Getting ready to watch: " + movie + " ---");
         lights.dim(10);
@@ -26,6 +27,7 @@ public class HomeTheaterFacade {
         dvd.play(movie);
     }
 
+    /** Handles end movie. */
     public void endMovie() {
         System.out.println("--- Shutting down theater ---");
         dvd.stop();
@@ -35,6 +37,7 @@ public class HomeTheaterFacade {
         lights.on();
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Facade Pattern Demo ===");
         HomeTheaterFacade theater = new HomeTheaterFacade(

@@ -19,6 +19,7 @@ public class ChatRoom implements ChatMediator {
                 .forEach(u -> u.receive(message, sender.getName()));
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Mediator Pattern Demo ===");
         ChatRoom room = new ChatRoom();

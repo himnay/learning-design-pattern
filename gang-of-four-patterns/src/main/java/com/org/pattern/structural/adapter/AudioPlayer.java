@@ -14,6 +14,7 @@ public class AudioPlayer implements MediaPlayer {
         }
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Adapter Pattern Demo ===");
         AudioPlayer player = new AudioPlayer();

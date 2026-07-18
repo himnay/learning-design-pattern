@@ -19,6 +19,7 @@ public class TreeType {
         System.out.println("TreeType created: " + name);
     }
 
+    /** Handles draw. */
     public void draw(int x, int y) {
         System.out.printf("Drawing %s tree [color=%s, texture=%s] at (%d,%d)%n", name, color, texture, x, y);
     }

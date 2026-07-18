@@ -34,6 +34,7 @@ class ShoppingCart {
     private final long id = System.nanoTime();
     private int itemCount = 0;
 
+    /** Adds item. */
     public void addItem(String item) {
         itemCount++;
         System.out.println("Cart[" + id + "] added: " + item + " (total: " + itemCount + ")");
@@ -46,6 +47,7 @@ class ShoppingCart {
 @Configuration
 class CartConfig {
 
+    /** Defines the cart bean. */
     @Bean
     @Scope("prototype")
     public ShoppingCart cart() {
@@ -64,6 +66,7 @@ class CheckoutService {
         this.context = context;
     }
 
+    /** Creates cart. */
     public ShoppingCart createCart() {
         // Each call returns a brand new ShoppingCart prototype
         return context.getBean(ShoppingCart.class);
@@ -72,6 +75,7 @@ class CheckoutService {
 
 public class SpringPrototypeBean {
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Spring Prototype Bean Demo ===");
         System.out.println("""

@@ -28,6 +28,7 @@ public class ReflectionSafeSingleton {
         return instance;
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Singleton — Reflection Guard Demo ===");
         ReflectionSafeSingleton s1 = ReflectionSafeSingleton.getInstance();

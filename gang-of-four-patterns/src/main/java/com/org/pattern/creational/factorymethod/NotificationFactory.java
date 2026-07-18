@@ -2,6 +2,7 @@ package com.org.pattern.creational.factorymethod;
 
 public class NotificationFactory {
 
+    /** Creates. */
     public static Notification create(String channel) {
         return switch (channel.toUpperCase()) {
             case "EMAIL" -> new EmailNotification();
@@ -11,6 +12,7 @@ public class NotificationFactory {
         };
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Factory Method Pattern Demo ===");
         String[] channels = {"EMAIL", "SMS", "PUSH"};

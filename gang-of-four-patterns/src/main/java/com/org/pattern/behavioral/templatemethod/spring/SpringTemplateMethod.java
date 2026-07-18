@@ -31,6 +31,7 @@ import java.util.List;
 abstract class DatabaseTemplate<T> {
 
     // Template method — fixed skeleton, cannot be overridden
+    /** Executes query. */
     public final List<T> executeQuery(String sql, Object... params) {
         System.out.println("[Template] acquiring connection...");
         System.out.println("[Template] executing: " + sql);
@@ -79,6 +80,7 @@ class SpringJdbcTemplateExample {
 
 public class SpringTemplateMethod {
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Spring Template Method Pattern Demo ===");
 

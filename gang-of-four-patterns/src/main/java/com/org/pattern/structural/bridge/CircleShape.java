@@ -21,6 +21,7 @@ public class CircleShape extends Shape {
         radius *= factor;
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Bridge Pattern Demo ===");
         Shape svgCircle = new CircleShape(10, 20, 5, new SvgDrawingAPI());

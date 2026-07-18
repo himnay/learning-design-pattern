@@ -12,6 +12,8 @@ public abstract class ChatUser {
 
     public String getName() { return name; }
 
+    /** Sends. */
     public abstract void send(String message);
+    /** Handles receive. */
     public abstract void receive(String message, String from);
 }

@@ -19,7 +19,9 @@ public abstract class Shape implements Cloneable {
         }
     }
 
+    /** Returns the clone. */
     public abstract Shape clone();
+    /** Returns the area. */
     public abstract double area();
 
     public void setColor(String color) { this.color = color; }

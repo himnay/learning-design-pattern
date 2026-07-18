@@ -16,6 +16,7 @@ public class VanillaDecorator extends CoffeeDecorator {
         return decoratedCoffee.getCost() + 0.50;
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Decorator Pattern Demo ===");
         Coffee coffee = new SimpleCoffee();

@@ -9,10 +9,12 @@ public record Quote(String text, String author, String source) {
     public static final String SOURCE_DOWNSTREAM = "downstream";
     public static final String SOURCE_FALLBACK = "fallback";
 
+    /** Returns the downstream. */
     public static Quote downstream(String text, String author) {
         return new Quote(text, author, SOURCE_DOWNSTREAM);
     }
 
+    /** Returns the fallback. */
     public static Quote fallback() {
         return new Quote(
                 "The best way out is always through. (cached fallback quote)",

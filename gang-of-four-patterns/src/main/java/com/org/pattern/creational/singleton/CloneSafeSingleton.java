@@ -36,6 +36,7 @@ public class CloneSafeSingleton implements Cloneable {
         throw new CloneNotSupportedException("Cloning a Singleton is not allowed.");
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Singleton — Clone Guard Demo ===");
         CloneSafeSingleton original = CloneSafeSingleton.getInstance();

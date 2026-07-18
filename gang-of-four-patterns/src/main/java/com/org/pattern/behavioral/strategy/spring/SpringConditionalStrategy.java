@@ -41,24 +41,24 @@ interface PaymentStrategy {
 // ── Concrete strategies ───────────────────────────────────────────────────────
 @Component("CARD")
 class CardPaymentStrategy implements PaymentStrategy {
-    @Override public String pay(double amount) {
     @Override public String getType() { return "CARD"; }
+    @Override public String pay(double amount) {
         return String.format("Card charged: $%.2f", amount);
     }
 }
 
 @Component("PAYPAL")
 class PayPalPaymentStrategy implements PaymentStrategy {
-    @Override public String pay(double amount) {
     @Override public String getType() { return "PAYPAL"; }
+    @Override public String pay(double amount) {
         return String.format("PayPal transfer: $%.2f", amount);
     }
 }
 
 @Component("CRYPTO")
 class CryptoPaymentStrategy implements PaymentStrategy {
-    @Override public String pay(double amount) {
     @Override public String getType() { return "CRYPTO"; }
+    @Override public String pay(double amount) {
         return String.format("Crypto transaction: $%.2f (~0.00042 BTC)", amount);
     }
 }
@@ -76,6 +76,7 @@ class PaymentService {
                 .collect(Collectors.toMap(PaymentStrategy::getType, Function.identity()));
     }
 
+    /** Processes payment. */
     public String processPayment(String type, double amount) {
         PaymentStrategy strategy = strategies.get(type.toUpperCase());
         if (strategy == null) throw new IllegalArgumentException("Unknown payment type: " + type);
@@ -88,6 +89,7 @@ class PaymentService {
 class CacheStrategyConfig {
 
     // Active when cache.strategy=redis in application.yml
+    /** Defines the redis cache manager bean. */
     @Bean
     @ConditionalOnProperty(name = "cache.strategy", havingValue = "redis")
     public String redisCacheManager() {
@@ -95,6 +97,7 @@ class CacheStrategyConfig {
     }
 
     // Active when cache.strategy=caffeine (or property absent)
+    /** Defines the caffeine cache manager bean. */
     @Bean
     @ConditionalOnProperty(name = "cache.strategy", havingValue = "caffeine", matchIfMissing = true)
     public String caffeineCacheManager() {
@@ -104,6 +107,7 @@ class CacheStrategyConfig {
 
 public class SpringConditionalStrategy {
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Spring Strategy Pattern Demo ===");
 

@@ -12,6 +12,7 @@ public class Tree {
         this.type = type;
     }
 
+    /** Handles draw. */
     public void draw() {
         type.draw(x, y);
     }

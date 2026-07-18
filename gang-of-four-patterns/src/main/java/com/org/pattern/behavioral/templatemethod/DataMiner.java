@@ -9,6 +9,7 @@ package com.org.pattern.behavioral.templatemethod;
  */
 public abstract class DataMiner {
 
+    /** Handles mine. */
     public final void mine(String path) {
         String rawData = extractData(path);
         String parsedData = parseData(rawData);

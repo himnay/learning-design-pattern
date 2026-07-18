@@ -50,6 +50,7 @@ class OrderService {
         this.publisher = publisher;
     }
 
+    /** Handles place order. */
     public void placeOrder(String orderId, String customerId) {
         System.out.println("[OrderService] placing order: " + orderId);
         // ... persist the order ...
@@ -61,6 +62,7 @@ class OrderService {
 @Component
 class EmailNotificationListener {
 
+    /** Handles order placed. */
     @EventListener
     public void onOrderPlaced(OrderPlacedEvent event) {
         System.out.println("[EmailListener] sending confirmation to customer: "
@@ -72,6 +74,7 @@ class EmailNotificationListener {
 @Component
 class InventoryListener {
 
+    /** Handles order placed. */
     @EventListener
     public void onOrderPlaced(OrderPlacedEvent event) {
         System.out.println("[InventoryListener] reserving stock for order: " + event.getOrderId());
@@ -82,6 +85,7 @@ class InventoryListener {
 @Component
 class AppStartupListener {
 
+    /** Handles ready. */
     @EventListener
     public void onReady(org.springframework.boot.context.event.ApplicationReadyEvent event) {
         System.out.println("[AppStartupListener] app ready — loading caches...");
@@ -90,6 +94,7 @@ class AppStartupListener {
 
 public class SpringApplicationEventObserver {
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Spring Observer Pattern — ApplicationEvent Demo ===");
         System.out.println("""
@@ -99,6 +104,7 @@ public class SpringApplicationEventObserver {
               @Service class OrderService {
                   @Autowired ApplicationEventPublisher publisher;
 
+                  /** Handles place order. */
                   public void placeOrder(String id) {
                       // ... business logic ...
                       publisher.publishEvent(new OrderPlacedEvent(this, id, customerId));
@@ -106,12 +112,14 @@ public class SpringApplicationEventObserver {
               }
 
               // Observer A — reacts to the event
+                  /** Handles. */
               @Component class EmailListener {
                   @EventListener
                   public void handle(OrderPlacedEvent e) { sendEmail(e.getCustomerId()); }
               }
 
               // Observer B — also reacts, independently
+                  /** Handles. */
               @Component class InventoryListener {
                   @EventListener
                   public void handle(OrderPlacedEvent e) { reserveStock(e.getOrderId()); }
@@ -120,6 +128,7 @@ public class SpringApplicationEventObserver {
             The publisher has NO knowledge of the listeners.
             Adding a new observer requires ZERO changes to OrderService.
 
+              /** Handles. */
             @Async + @EventListener = non-blocking observers:
               @Async
               @EventListener

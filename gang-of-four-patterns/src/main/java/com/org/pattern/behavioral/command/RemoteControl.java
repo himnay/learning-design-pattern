@@ -7,11 +7,13 @@ public class RemoteControl {
 
     private final Deque<Command> history = new ArrayDeque<>();
 
+    /** Handles press. */
     public void press(Command command) {
         command.execute();
         history.push(command);
     }
 
+    /** Handles undo last. */
     public void undoLast() {
         if (!history.isEmpty()) {
             Command last = history.pop();
@@ -20,6 +22,7 @@ public class RemoteControl {
         }
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Command Pattern Demo ===");
         RemoteControl remote = new RemoteControl();

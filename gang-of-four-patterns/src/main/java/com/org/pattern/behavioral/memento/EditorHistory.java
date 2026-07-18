@@ -7,14 +7,17 @@ public class EditorHistory {
 
     private final Deque<EditorMemento> history = new ArrayDeque<>();
 
+    /** Pushes. */
     public void push(EditorMemento memento) {
         history.push(memento);
     }
 
+    /** Pops. */
     public EditorMemento pop() {
         return history.isEmpty() ? null : history.pop();
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Memento Pattern Demo ===");
         TextEditor editor = new TextEditor();

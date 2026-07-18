@@ -12,6 +12,7 @@ public class TrafficLight {
         this.state = state;
     }
 
+    /** Handles change. */
     public void change() {
         state.handle(this);
     }
@@ -20,6 +21,7 @@ public class TrafficLight {
         return state.getColor();
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== State Pattern Demo ===");
         TrafficLight light = new TrafficLight();

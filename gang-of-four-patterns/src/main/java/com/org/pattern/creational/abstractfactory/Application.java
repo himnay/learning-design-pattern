@@ -10,11 +10,13 @@ public class Application {
         this.checkbox = factory.createCheckbox();
     }
 
+    /** Renders. */
     public void render() {
         button.render();
         checkbox.render();
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Abstract Factory Pattern Demo ===");
         String os = System.getProperty("os.name", "Windows").toLowerCase();

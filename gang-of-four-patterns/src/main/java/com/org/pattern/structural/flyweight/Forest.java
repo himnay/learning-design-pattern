@@ -8,15 +8,18 @@ public class Forest {
 
     private final List<Tree> trees = new ArrayList<>();
 
+    /** Handles plant tree. */
     public void plantTree(int x, int y, String name, String color, String texture) {
         TreeType type = TreeFactory.getTreeType(name, color, texture);
         trees.add(new Tree(x, y, type));
     }
 
+    /** Handles draw. */
     public void draw() {
         trees.forEach(Tree::draw);
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Flyweight Pattern Demo ===");
         Forest forest = new Forest();

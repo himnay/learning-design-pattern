@@ -2,6 +2,7 @@ package com.org.pattern.behavioral.interpreter;
 
 public class InterpreterDemo {
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Interpreter Pattern Demo ===");
 

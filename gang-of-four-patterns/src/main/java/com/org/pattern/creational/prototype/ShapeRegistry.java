@@ -7,16 +7,19 @@ public class ShapeRegistry {
 
     private final Map<String, Shape> cache = new HashMap<>();
 
+    /** Registers. */
     public void register(String key, Shape shape) {
         cache.put(key, shape);
     }
 
+    /** Returns the get. */
     public Shape get(String key) {
         Shape prototype = cache.get(key);
         if (prototype == null) throw new IllegalArgumentException("No prototype for key: " + key);
         return prototype.clone();
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Prototype Pattern Demo ===");
         ShapeRegistry registry = new ShapeRegistry();

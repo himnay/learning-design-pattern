@@ -31,6 +31,7 @@ public class ChaosController {
         this.flakyQuoteClient = flakyQuoteClient;
     }
 
+    /** Returns the current chaos. */
     @GetMapping
     public Map<String, Object> currentChaos() {
         return state();
@@ -48,6 +49,7 @@ public class ChaosController {
                 "downstreamInvocations", flakyQuoteClient.invocationCount());
     }
 
+    /** Returns the bad fail rate. */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> badFailRate(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));

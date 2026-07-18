@@ -45,6 +45,7 @@ public final class SerializationSafeSingleton implements Serializable {
         return instance;
     }
 
+    /** Demoes. */
     public static void demo() throws IOException, ClassNotFoundException {
         System.out.println("=== Singleton — Serialization Guard Demo ===");
         SerializationSafeSingleton original = SerializationSafeSingleton.getInstance();

@@ -104,6 +104,7 @@ class TransactionalProxy implements OrderService {
 
 public class SpringAopProxy {
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Spring AOP Proxy Pattern Demo ===");
 
@@ -126,6 +127,7 @@ public class SpringAopProxy {
               //   → proxy commits (or rolls back)
 
             Resilience4j adds more proxy layers (decorator chain):
+              /** Calls downstream. */
               @Retry(name="orders")
               @RateLimiter(name="orders")
               @CircuitBreaker(name="orders")

@@ -40,42 +40,50 @@ public class Pizza {
         private boolean extraCheese = false;
         private boolean glutenFree = false;
 
+        /** Returns the size. */
         public Builder size(String size) {
             this.size = size;
             return this;
         }
 
+        /** Returns the crust. */
         public Builder crust(String crust) {
             this.crust = crust;
             return this;
         }
 
+        /** Returns the sauce. */
         public Builder sauce(String sauce) {
             this.sauce = sauce;
             return this;
         }
 
+        /** Returns the toppings. */
         public Builder toppings(List<String> toppings) {
             this.toppings = toppings;
             return this;
         }
 
+        /** Returns the extra cheese. */
         public Builder extraCheese(boolean extraCheese) {
             this.extraCheese = extraCheese;
             return this;
         }
 
+        /** Returns the gluten free. */
         public Builder glutenFree(boolean glutenFree) {
             this.glutenFree = glutenFree;
             return this;
         }
 
+        /** Builds. */
         public Pizza build() {
             if (size == null || size.isBlank()) throw new IllegalStateException("Size is required");
             return new Pizza(this);
         }
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Builder Pattern Demo ===");
         Pizza margherita = new Pizza.Builder()

@@ -7,6 +7,7 @@ public class Level3Support extends SupportHandler {
         System.out.println("L3 Engineering resolved ticket #" + ticket.getId() + ": " + ticket.getIssue());
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Chain of Responsibility Pattern Demo ===");
         Level1Support l1 = new Level1Support();

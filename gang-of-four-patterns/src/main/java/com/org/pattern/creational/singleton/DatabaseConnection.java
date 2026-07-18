@@ -30,6 +30,7 @@ public class DatabaseConnection {
         return instance;
     }
 
+    /** Executes query. */
     public String executeQuery(String sql) {
         int count = queryCount.incrementAndGet();
         return "[Query #" + count + "] on [" + connectionUrl + "]: " + sql;
@@ -39,6 +40,7 @@ public class DatabaseConnection {
         return connectionUrl;
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Singleton Pattern Demo ===");
         DatabaseConnection conn1 = DatabaseConnection.getInstance();

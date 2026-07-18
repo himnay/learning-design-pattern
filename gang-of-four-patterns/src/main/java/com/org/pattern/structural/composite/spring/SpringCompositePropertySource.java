@@ -47,6 +47,7 @@ class LeafPropertySource extends PropertySource<Map<String, Object>> {
 @Configuration
 class PropertyConfig {
 
+    /** Defines the composite source bean. */
     @Bean
     public CompositePropertySource compositeSource() {
         CompositePropertySource composite = new CompositePropertySource("app-config");
@@ -68,6 +69,7 @@ class PropertyConfig {
 
 public class SpringCompositePropertySource {
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Spring Composite Pattern — PropertySource Demo ===");
 

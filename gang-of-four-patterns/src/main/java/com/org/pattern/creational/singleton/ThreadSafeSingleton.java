@@ -48,6 +48,7 @@ public class ThreadSafeSingleton {
         private static final ThreadSafeSingleton INSTANCE = new ThreadSafeSingleton();
     }
 
+    /** Demoes. */
     public static void demo() throws InterruptedException {
         System.out.println("=== Singleton — Thread-Safety Demo ===");
         Runnable task = () -> {

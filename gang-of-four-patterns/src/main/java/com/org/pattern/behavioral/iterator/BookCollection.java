@@ -12,6 +12,7 @@ public class BookCollection implements Iterable<Book> {
 
     private final List<Book> books = new ArrayList<>();
 
+    /** Adds book. */
     public void addBook(Book book) {
         books.add(book);
     }
@@ -21,12 +22,14 @@ public class BookCollection implements Iterable<Book> {
         return books.iterator();
     }
 
+    /** Reverses iterator. */
     public java.util.Iterator<Book> reverseIterator() {
         List<Book> reversed = new ArrayList<>(books);
         java.util.Collections.reverse(reversed);
         return reversed.iterator();
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Iterator Pattern Demo ===");
         BookCollection library = new BookCollection();

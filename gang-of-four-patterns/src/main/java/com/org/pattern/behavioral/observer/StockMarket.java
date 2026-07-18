@@ -14,10 +14,12 @@ public class StockMarket {
         this.price = initialPrice;
     }
 
+    /** Subscribes. */
     public void subscribe(StockObserver observer) {
         observers.add(observer);
     }
 
+    /** Unsubscribes. */
     public void unsubscribe(StockObserver observer) {
         observers.remove(observer);
     }

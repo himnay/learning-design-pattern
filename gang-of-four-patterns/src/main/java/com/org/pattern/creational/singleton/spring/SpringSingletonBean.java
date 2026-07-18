@@ -23,6 +23,7 @@ class EmailService {
         System.out.println("EmailService created once by Spring IoC");
     }
 
+    /** Sends. */
     public void send(String to, String body) {
         System.out.println("Email -> " + to + ": " + body);
     }
@@ -32,6 +33,7 @@ class EmailService {
 @Configuration
 class AppConfig {
 
+    /** Defines the email service bean. */
     @Bean   // singleton by default — same instance returned on every injection
     public EmailService emailService() {
         return new EmailService();
@@ -48,6 +50,7 @@ class OrderService {
         this.emailService = emailService;
     }
 
+    /** Handles place order. */
     public void placeOrder(String userId) {
         emailService.send(userId, "Your order is confirmed.");
     }
@@ -56,6 +59,7 @@ class OrderService {
 // ── Demo (illustrates how Spring resolves singletons) ────────────────────────
 public class SpringSingletonBean {
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Spring Singleton Bean Demo ===");
         System.out.println("""

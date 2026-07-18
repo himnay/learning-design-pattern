@@ -22,6 +22,7 @@ public class PerimeterCalculatorVisitor implements ShapeVisitor {
         System.out.printf("Triangle perimeter: %.2f%n", perimeter);
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Visitor Pattern Demo ===");
         List<VisitableShape> shapes = List.of(

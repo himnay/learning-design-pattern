@@ -28,6 +28,7 @@ public class FlakyQuoteClient {
     private final AtomicInteger failRatePercent = new AtomicInteger(0);
     private final AtomicLong invocations = new AtomicLong(0);
 
+    /** Fetches quote. */
     public Quote fetchQuote() {
         invocations.incrementAndGet();
         if (ThreadLocalRandom.current().nextInt(100) < failRatePercent.get()) {

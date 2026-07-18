@@ -14,6 +14,7 @@ public abstract class SupportHandler {
         return next;
     }
 
+    /** Handles. */
     public abstract void handle(SupportTicket ticket);
 
     protected void escalate(SupportTicket ticket) {

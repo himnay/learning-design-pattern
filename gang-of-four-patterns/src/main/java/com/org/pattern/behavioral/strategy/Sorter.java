@@ -12,11 +12,13 @@ public class Sorter {
         this.strategy = strategy;
     }
 
+    /** Sorts. */
     public void sort(int[] array) {
         System.out.println("Using: " + strategy.getName());
         strategy.sort(array);
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Strategy Pattern Demo ===");
         int[] data1 = {5, 2, 8, 1, 9, 3};

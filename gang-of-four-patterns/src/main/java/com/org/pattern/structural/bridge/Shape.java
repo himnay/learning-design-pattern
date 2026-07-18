@@ -8,6 +8,8 @@ public abstract class Shape {
         this.drawingAPI = drawingAPI;
     }
 
+    /** Handles draw. */
     public abstract void draw();
+    /** Handles resize. */
     public abstract void resize(double factor);
 }

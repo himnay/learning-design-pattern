@@ -22,6 +22,7 @@ public class ProxyImage implements Image {
         return fileName;
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Proxy Pattern Demo ===");
         Image image = new ProxyImage("photo.jpg");

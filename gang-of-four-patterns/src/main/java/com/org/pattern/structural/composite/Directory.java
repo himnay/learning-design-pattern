@@ -12,10 +12,12 @@ public class Directory implements FileSystemComponent {
         this.name = name;
     }
 
+    /** Adds. */
     public void add(FileSystemComponent component) {
         children.add(component);
     }
 
+    /** Removes. */
     public void remove(FileSystemComponent component) {
         children.remove(component);
     }
@@ -34,6 +36,7 @@ public class Directory implements FileSystemComponent {
         children.forEach(c -> c.print(indent + "  "));
     }
 
+    /** Demoes. */
     public static void demo() {
         System.out.println("=== Composite Pattern Demo ===");
         Directory root = new Directory("root");

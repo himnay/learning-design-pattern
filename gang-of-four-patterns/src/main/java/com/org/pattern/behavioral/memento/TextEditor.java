@@ -5,15 +5,18 @@ public class TextEditor {
     private String content = "";
     private int cursorPosition = 0;
 
+    /** Handles type. */
     public void type(String text) {
         content = content.substring(0, cursorPosition) + text + content.substring(cursorPosition);
         cursorPosition += text.length();
     }
 
+    /** Saves. */
     public EditorMemento save() {
         return new EditorMemento(content, cursorPosition);
     }
 
+    /** Restores. */
     public void restore(EditorMemento memento) {
         this.content = memento.getContent();
         this.cursorPosition = memento.getCursorPosition();
