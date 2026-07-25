@@ -41,7 +41,11 @@ class AppConfig {
 }
 
 // ── Consumer ─────────────────────────────────────────────────────────────────
-@Service
+// Explicit bean name — this demo package and the observer-pattern demo package both
+// declare a class named OrderService; without distinct names, component-scanning both
+// under the same context throws ConflictingBeanDefinitionException (default bean name
+// is derived from the simple class name, so both would collide on "orderService").
+@Service("singletonDemoOrderService")
 class OrderService {
 
     private final EmailService emailService; // Spring injects the SAME singleton

@@ -41,7 +41,9 @@ class OrderPlacedEvent extends ApplicationEvent {
 }
 
 // ── Subject: publishes events ─────────────────────────────────────────────────
-@Service
+// Explicit bean name — see the singleton-pattern demo's OrderService for why (same
+// simple class name in both packages would otherwise collide as bean "orderService").
+@Service("observerDemoOrderService")
 class OrderService {
 
     private final ApplicationEventPublisher publisher;
