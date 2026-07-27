@@ -6,7 +6,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>4.1.0</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
     <groupId>com.org.pattern</groupId>
     <artifactId>microservice-patterns</artifactId>
@@ -23,8 +23,6 @@
     <properties>
         <java.version>25</java.version>
         <spring-cloud.version>2025.1.2</spring-cloud.version>
-        <!-- resilience4j 2.4.0 ships SpringBoot3Verifier that refuses Spring Boot 4.x at startup — hold at 2.3.0
-             (same pin as learning-bom; Spring Cloud 2025.1.x also manages 2.3.0 transitively) -->
         <resilience4j.version>2.3.0</resilience4j.version>
     </properties>
 
