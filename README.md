@@ -1,6 +1,6 @@
-# Learning Design Patterns
+# <span style="color:hsl(0,68%,44%)">Learning Design Patterns</span>
 
-## Table of contents
+## <span style="color:hsl(72,68%,32%)">Table of contents</span>
 
 1. 🏗️ [Layout & modules](#layout--modules)
 2. 🧩 [Why two categories of patterns](#why-two-categories-of-patterns)
@@ -10,7 +10,7 @@
 ---
 
 <a id="layout--modules"></a>
-## 1. 🏗️ Layout & modules
+## <span style="color:hsl(144,68%,32%)">1. 🏗️ Layout & modules</span>
 
 A Java / Spring Boot repository for studying software design patterns by implementing them, not just reading about them. It is organized as **two independent Maven projects** living side by side in one git repository (there is no aggregator/reactor `pom.xml` at the root — each module is built and run on its own):
 
@@ -28,7 +28,7 @@ learning-design-pattern/
 ---
 
 <a id="why-two-categories-of-patterns"></a>
-## 2. 🧩 Why two categories of patterns
+## <span style="color:hsl(216,68%,44%)">2. 🧩 Why two categories of patterns</span>
 
 Design patterns are usually taught as one flat list, but they solve problems at two different scales, which is why this repository keeps them in separate modules:
 
@@ -66,7 +66,7 @@ flowchart TB
 ---
 
 <a id="getting-started"></a>
-## 3. 🚀 Getting started
+## <span style="color:hsl(288,68%,44%)">3. 🚀 Getting started</span>
 
 Each module is a self-contained Spring Boot / Maven project with its own wrapper. From the module directory:
 
