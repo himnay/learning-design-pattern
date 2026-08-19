@@ -1,4 +1,4 @@
-# <span style="color:hsl(60,68%,32%)">Gang of Four — Design Patterns in Java</span>
+# <span style="color:hsl(60,80%,50%)">Gang of Four — Design Patterns in Java</span>
 
 - Implements all **23 classic GoF design patterns** organized into three categories
 - Each pattern includes a real-world analogy, a working Java example, and a `demo()` method you can run
@@ -9,7 +9,7 @@
 
 ---
 
-## <span style="color:hsl(69,68%,32%)">GoF → Spring Boot / Spring Cloud Mapping</span>
+## <span style="color:hsl(198,80%,58%)">GoF → Spring Boot / Spring Cloud Mapping</span>
 
 | GoF Pattern                 | Category   | Spring / Spring Cloud usage                                                                                                                          |
 |-----------------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -29,7 +29,7 @@
 
 ---
 
-## <span style="color:hsl(78,68%,32%)">Table of Contents</span>
+## <span style="color:hsl(335,80%,58%)">Table of Contents</span>
 
 - [Creational Patterns](#creational-patterns)
   - [Singleton](#1-singleton)
@@ -60,7 +60,7 @@
 
 ---
 
-## <span style="color:hsl(88,68%,32%)">Creational Patterns</span>
+## <span style="color:hsl(113,80%,58%)">Creational Patterns</span>
 
 - Deal with **object creation**, abstracting the instantiation process
 - Make a system independent of how its objects are created, composed, and represented
@@ -68,7 +68,7 @@
 
 ---
 
-### <span style="color:hsl(97,68%,32%)">1. Singleton</span>
+### <span style="color:hsl(250,80%,58%)">1. Singleton</span>
 
 **Intent:** Ensure a class has only one instance and provide a global access point to it.
 
@@ -139,7 +139,7 @@ classDiagram
 
 ---
 
-#### <span style="color:hsl(106,68%,32%)">Core implementation — Double-Checked Locking</span>
+#### <span style="color:hsl(28,80%,58%)">Core implementation — Double-Checked Locking</span>
 
 ```java
 private static volatile DatabaseConnection instance;
@@ -162,7 +162,7 @@ public static DatabaseConnection getInstance() {
 
 ---
 
-#### <span style="color:hsl(115,68%,32%)">Singleton Hacks & How to Defend Against Them</span>
+#### <span style="color:hsl(165,80%,58%)">Singleton Hacks & How to Defend Against Them</span>
 
 - A naive singleton can be broken in four ways
 - In production code you must guard against all four
@@ -170,7 +170,7 @@ public static DatabaseConnection getInstance() {
 
 ---
 
-##### <span style="color:hsl(125,68%,32%)">Hack 1 — Reflection (`ReflectionSafeSingleton.java`)</span>
+##### <span style="color:hsl(303,80%,58%)">Hack 1 — Reflection (`ReflectionSafeSingleton.java`)</span>
 
 **The attack:** `getDeclaredConstructors()[0].setAccessible(true)` bypasses the `private` modifier and calls the constructor a second time, creating a second instance.
 
@@ -203,7 +203,7 @@ Attack blocked: Instance already created — reflection attack blocked.
 
 ---
 
-##### <span style="color:hsl(134,68%,32%)">Hack 2 — Multi-Threading (`ThreadSafeSingleton.java`)</span>
+##### <span style="color:hsl(80,80%,58%)">Hack 2 — Multi-Threading (`ThreadSafeSingleton.java`)</span>
 
 **The attack:** Without synchronization, two threads can both pass the `if (instance == null)` check simultaneously and each create their own instance.
 
@@ -250,7 +250,7 @@ Holder variant: 987654321
 
 ---
 
-##### <span style="color:hsl(143,68%,32%)">Hack 3 — Serialization (`SerializationSafeSingleton.java`)</span>
+##### <span style="color:hsl(218,80%,58%)">Hack 3 — Serialization (`SerializationSafeSingleton.java`)</span>
 
 **The attack:** When a `Serializable` singleton is deserialized, Java bypasses the constructor and creates a fresh object — a different instance from the original.
 
@@ -282,7 +282,7 @@ Same instance? true
 
 ---
 
-##### <span style="color:hsl(152,68%,36%)">Hack 4 — Cloning (`CloneSafeSingleton.java`)</span>
+##### <span style="color:hsl(355,80%,58%)">Hack 4 — Cloning (`CloneSafeSingleton.java`)</span>
 
 **The attack:** If the singleton class implements `Cloneable` (or inherits it), `clone()` bypasses the constructor and produces a shallow copy — a second independent instance.
 
@@ -308,7 +308,7 @@ Attack blocked: Cloning a Singleton is not allowed.
 
 ---
 
-##### <span style="color:hsl(162,68%,36%)">Alternative — Enum Singleton (`SingletonEnum.java`)</span>
+##### <span style="color:hsl(133,80%,58%)">Alternative — Enum Singleton (`SingletonEnum.java`)</span>
 
 - Best Singleton implementation in Java, as recommended by Joshua Bloch (*Effective Java*, Item 3)
 - The JVM gives you all four guarantees for free
@@ -351,7 +351,7 @@ Reflection blocked by JVM: IllegalArgumentException
 
 ---
 
-#### <span style="color:hsl(171,68%,36%)">Singleton Comparison Table</span>
+#### <span style="color:hsl(270,80%,58%)">Singleton Comparison Table</span>
 
 | Variant                      | Thread-safe | Reflection-safe | Serialization-safe | Clone-safe | Notes                                |
 |------------------------------|:-----------:|:---------------:|:------------------:|:----------:|--------------------------------------|
@@ -394,7 +394,7 @@ class OrderService {
 
 ---
 
-### <span style="color:hsl(180,68%,36%)">2. Factory Method</span>
+### <span style="color:hsl(48,80%,50%)">2. Factory Method</span>
 
 **Intent:** Define an interface for creating an object, but let subclasses (or a factory class) decide which class to instantiate.
 
@@ -479,7 +479,7 @@ public NotificationSender smsSender() { return new SmsSender(); }
 
 ---
 
-### <span style="color:hsl(189,68%,36%)">3. Abstract Factory</span>
+### <span style="color:hsl(185,80%,58%)">3. Abstract Factory</span>
 
 **Intent:** Provide an interface for creating **families of related objects** without specifying their concrete classes.
 
@@ -557,7 +557,7 @@ Rendering macOS-style checkbox [ ]
 
 ---
 
-### <span style="color:hsl(198,68%,36%)">4. Builder</span>
+### <span style="color:hsl(323,80%,58%)">4. Builder</span>
 
 **Intent:** Separate the construction of a complex object from its representation, allowing the same construction process to create different representations.
 
@@ -657,7 +657,7 @@ new SpringApplicationBuilder()
 
 ---
 
-### <span style="color:hsl(208,68%,44%)">5. Prototype</span>
+### <span style="color:hsl(100,80%,58%)">5. Prototype</span>
 
 **Intent:** Specify the kinds of objects to create using a prototypical instance, and create new objects by **copying** this prototype.
 
@@ -766,7 +766,7 @@ ShoppingCart fresh = cartProvider.get();  // new instance each time
 
 ---
 
-## <span style="color:hsl(217,68%,44%)">Structural Patterns</span>
+## <span style="color:hsl(238,80%,58%)">Structural Patterns</span>
 
 - Deal with **object composition**, creating relationships between objects to form larger structures
 - Keep structures flexible and efficient while allowing parts to vary independently
@@ -774,7 +774,7 @@ ShoppingCart fresh = cartProvider.get();  // new instance each time
 
 ---
 
-### <span style="color:hsl(226,68%,44%)">6. Adapter</span>
+### <span style="color:hsl(15,80%,58%)">6. Adapter</span>
 
 **Intent:** Convert the interface of a class into another interface that clients expect. Lets incompatible interfaces work together.
 
@@ -867,7 +867,7 @@ List<Order> orders = jdbcTemplate.query(
 
 ---
 
-### <span style="color:hsl(235,68%,44%)">7. Bridge</span>
+### <span style="color:hsl(153,80%,58%)">7. Bridge</span>
 
 **Intent:** Decouple an abstraction from its implementation so that the two can vary independently.
 
@@ -940,7 +940,7 @@ SVG: <circle cx='10.0' cy='20.0' r='10.0'/>
 
 ---
 
-### <span style="color:hsl(245,68%,44%)">8. Composite</span>
+### <span style="color:hsl(290,80%,58%)">8. Composite</span>
 
 **Intent:** Compose objects into **tree structures** to represent part-whole hierarchies. Lets clients treat individual objects and compositions uniformly.
 
@@ -1031,7 +1031,7 @@ private int port;
 
 ---
 
-### <span style="color:hsl(254,68%,44%)">9. Decorator</span>
+### <span style="color:hsl(68,80%,50%)">9. Decorator</span>
 
 **Intent:** Attach additional responsibilities to an object dynamically. Decorators provide a flexible alternative to subclassing for extending functionality.
 
@@ -1132,7 +1132,7 @@ new BufferedReader(new InputStreamReader(new FileInputStream("data.txt")))
 
 ---
 
-### <span style="color:hsl(263,68%,44%)">10. Facade</span>
+### <span style="color:hsl(205,80%,58%)">10. Facade</span>
 
 **Intent:** Provide a simplified interface to a complex subsystem.
 
@@ -1201,7 +1201,7 @@ DVD Player: Playing 'Inception'
 
 ---
 
-### <span style="color:hsl(272,68%,44%)">11. Flyweight</span>
+### <span style="color:hsl(343,80%,58%)">11. Flyweight</span>
 
 **Intent:** Use sharing to efficiently support a large number of **fine-grained objects**. Separates shared intrinsic state from unique extrinsic state.
 
@@ -1272,7 +1272,7 @@ Unique TreeType objects created: 2 (for 8 trees)
 
 ---
 
-### <span style="color:hsl(282,68%,44%)">12. Proxy</span>
+### <span style="color:hsl(120,80%,58%)">12. Proxy</span>
 
 **Intent:** Provide a surrogate or placeholder for another object to control access to it.
 
@@ -1363,14 +1363,14 @@ class OrderService {
 
 ---
 
-## <span style="color:hsl(291,68%,44%)">Behavioral Patterns</span>
+## <span style="color:hsl(258,80%,58%)">Behavioral Patterns</span>
 
 - Deal with **communication between objects**, defining how objects interact and distribute responsibility
 - Eleven patterns covering request routing, state change notification, algorithm selection, and more
 
 ---
 
-### <span style="color:hsl(300,68%,44%)">13. Chain of Responsibility</span>
+### <span style="color:hsl(35,80%,58%)">13. Chain of Responsibility</span>
 
 **Intent:** Pass requests along a chain of handlers. Each handler either handles the request or passes it to the next handler.
 
@@ -1458,7 +1458,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 ---
 
-### <span style="color:hsl(309,68%,44%)">14. Command</span>
+### <span style="color:hsl(173,80%,58%)">14. Command</span>
 
 **Intent:** Encapsulate a request as an object, enabling parameterization, queuing, logging, and undo/redo.
 
@@ -1529,7 +1529,7 @@ Undo -> Bedroom light: OFF
 
 ---
 
-### <span style="color:hsl(318,68%,44%)">15. Iterator</span>
+### <span style="color:hsl(310,80%,58%)">15. Iterator</span>
 
 **Intent:** Provide a way to **sequentially access** elements of a collection without exposing its internal representation.
 
@@ -1582,7 +1582,7 @@ while (iter.hasNext()) { System.out.println(iter.next()); }
 
 ---
 
-### <span style="color:hsl(328,68%,44%)">16. Mediator</span>
+### <span style="color:hsl(88,80%,58%)">16. Mediator</span>
 
 **Intent:** Define an object that encapsulates how a set of objects interact. Reduces direct references between objects, promoting loose coupling.
 
@@ -1643,7 +1643,7 @@ public void sendMessage(String message, ChatUser sender) {
 
 ---
 
-### <span style="color:hsl(337,68%,44%)">17. Memento</span>
+### <span style="color:hsl(225,80%,58%)">17. Memento</span>
 
 **Intent:** Capture and externalize an object's internal state so it can be restored later, **without violating encapsulation**.
 
@@ -1714,7 +1714,7 @@ Undo -> Editor{content='Hello', cursor=5}
 
 ---
 
-### <span style="color:hsl(346,68%,44%)">18. Observer</span>
+### <span style="color:hsl(3,80%,58%)">18. Observer</span>
 
 **Intent:** Define a one-to-many dependency so that when one object changes state, all its dependents are notified and updated automatically.
 
@@ -1815,7 +1815,7 @@ public void onReady() { /* app fully started */ }
 
 ---
 
-### <span style="color:hsl(355,68%,44%)">19. State</span>
+### <span style="color:hsl(140,80%,58%)">19. State</span>
 
 **Intent:** Allow an object to alter its behavior when its internal state changes. The object will appear to change its class.
 
@@ -1911,7 +1911,7 @@ stateMachine.sendEvent(OrderEvent.SHIP);        // PAID → PROCESSING → SHIPP
 
 ---
 
-### <span style="color:hsl(5,68%,44%)">20. Strategy</span>
+### <span style="color:hsl(278,80%,58%)">20. Strategy</span>
 
 **Intent:** Define a family of algorithms, encapsulate each one, and make them interchangeable. Lets the algorithm vary independently from the clients that use it.
 
@@ -2011,7 +2011,7 @@ http.authenticationProvider(jwtProvider)
 
 ---
 
-### <span style="color:hsl(14,68%,44%)">21. Template Method</span>
+### <span style="color:hsl(55,80%,50%)">21. Template Method</span>
 
 **Intent:** Define the **skeleton of an algorithm** in a base class, deferring some steps to subclasses. Subclasses redefine certain steps without changing the algorithm's structure.
 
@@ -2117,7 +2117,7 @@ interface OrderClient {
 
 ---
 
-### <span style="color:hsl(23,68%,44%)">22. Visitor</span>
+### <span style="color:hsl(193,80%,58%)">22. Visitor</span>
 
 **Intent:** Represent an operation to be performed on elements of an object structure. Visitor lets you define a new operation **without changing** the classes of the elements on which it operates.
 
@@ -2185,7 +2185,7 @@ Triangle perimeter: 12.00
 
 ---
 
-### <span style="color:hsl(32,68%,44%)">23. Interpreter</span>
+### <span style="color:hsl(330,80%,58%)">23. Interpreter</span>
 
 **Intent:** Given a language, define a representation for its grammar and provide an interpreter that uses the representation to interpret sentences in that language.
 
@@ -2250,7 +2250,7 @@ Context: ADMIN SUSPENDED       -> Access: false
 
 ---
 
-## <span style="color:hsl(42,68%,32%)">Pattern Summary Table</span>
+## <span style="color:hsl(108,80%,58%)">Pattern Summary Table</span>
 
 | #   | Pattern                 | Category   | Key Intent                               |
 |-----|-------------------------|------------|------------------------------------------|
@@ -2280,7 +2280,7 @@ Context: ADMIN SUSPENDED       -> Access: false
 
 ---
 
-## <span style="color:hsl(51,68%,32%)">Running the Examples</span>
+## <span style="color:hsl(245,80%,58%)">Running the Examples</span>
 
 Each pattern class has a static `demo()` method. You can invoke them from `GangOfFourApplication`:
 

@@ -1,4 +1,4 @@
-# <span style="color:hsl(180,68%,36%)">Microservice Patterns — Java / Spring Boot</span>
+# <span style="color:hsl(180,80%,58%)">Microservice Patterns — Java / Spring Boot</span>
 
 Distributed-systems patterns, each as its own runnable Spring Boot module — as opposed to
 `gang-of-four-patterns`, whose patterns live inside a single process. This module is a
@@ -15,7 +15,7 @@ own `mvn spring-boot:run`.
 
 ---
 
-## <span style="color:hsl(216,68%,44%)">Table of Contents</span>
+## <span style="color:hsl(318,80%,58%)">Table of Contents</span>
 
 - [1. Circuit Breaker — `circuit-breaker-service`](#1-circuit-breaker--circuit-breaker-service) — *implemented*
 - [2. API Gateway — `gateway-service`](#2-api-gateway--gateway-service) — *implemented*
@@ -26,7 +26,7 @@ own `mvn spring-boot:run`.
 
 ---
 
-## <span style="color:hsl(252,68%,44%)">1. Circuit Breaker — `circuit-breaker-service`</span>
+## <span style="color:hsl(95,80%,58%)">1. Circuit Breaker — `circuit-breaker-service`</span>
 
 **Intent:** Prevent a failing downstream service from being called repeatedly, giving it
 time to recover and giving the caller a fast, predictable failure instead of hanging on
@@ -48,7 +48,7 @@ stateDiagram-v2
     HalfOpen --> Open: trial call fails
 ```
 
-### <span style="color:hsl(288,68%,44%)">What's actually in the code</span>
+### <span style="color:hsl(233,80%,58%)">What's actually in the code</span>
 
 | File                               | Role                                                                                                                                          |
 |------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
@@ -78,7 +78,7 @@ fires.
 
 ---
 
-## <span style="color:hsl(324,68%,44%)">2. API Gateway — `gateway-service`</span>
+## <span style="color:hsl(10,80%,58%)">2. API Gateway — `gateway-service`</span>
 
 **Intent:** Give clients a single, stable entry point into a system made of many
 independently deployable services, so cross-cutting concerns (routing, correlation,
@@ -91,7 +91,7 @@ flowchart LR
     GW -.->|on failure/CB open| FB[GatewayFallbackController<br/>/fallback/quotes]
 ```
 
-### <span style="color:hsl(0,68%,44%)">What's actually in the code</span>
+### <span style="color:hsl(148,80%,58%)">What's actually in the code</span>
 
 | File                                      | Role                                                                                                                                                                            |
 |-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -124,7 +124,7 @@ happy path, and a connection-reset fault to prove the route-level breaker's fall
 
 ---
 
-## <span style="color:hsl(36,68%,44%)">3. Service Discovery</span>
+## <span style="color:hsl(285,80%,58%)">3. Service Discovery</span>
 
 > **Status: roadmap — not yet implemented.**
 
@@ -154,7 +154,7 @@ sequenceDiagram
     GW->>CB: GET /api/quotes (load-balanced pick)
 ```
 
-## <span style="color:hsl(72,68%,32%)">4. Saga</span>
+## <span style="color:hsl(63,80%,50%)">4. Saga</span>
 
 > **Status: roadmap — not yet implemented.**
 
@@ -186,7 +186,7 @@ sequenceDiagram
     Order->>Payment: RefundPayment
 ```
 
-## <span style="color:hsl(108,68%,32%)">5. Externalized Configuration</span>
+## <span style="color:hsl(200,80%,58%)">5. Externalized Configuration</span>
 
 > **Status: roadmap — not yet implemented.**
 
@@ -200,7 +200,7 @@ composed property source is fetched remotely rather than only from local files.
 
 ---
 
-## <span style="color:hsl(144,68%,32%)">Running both services together</span>
+## <span style="color:hsl(338,80%,58%)">Running both services together</span>
 
 ```bash
 cd circuit-breaker-service && mvn spring-boot:run &    # :8081
