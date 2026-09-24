@@ -63,6 +63,12 @@ the Boot BOM. Resilience4j's `@CircuitBreaker`/`@Retry` are `@Aspect` classes th
 need `org.aspectj:aspectjweaver` on the classpath for pointcut parsing (proxy-based, not
 real weaving) — the pom depends on it directly; the BOM still manages its version.
 
+Resilience4j version note (as of Sep 2026): both services use `resilience4j-spring-boot3` at the
+version Spring Cloud 2025.1.3 manages (2.3.0). Spring Cloud CircuitBreaker 5.0.3 (used by the gateway)
+is built on the boot3 starter, and 2.4.0's boot3 starter adds a verifier that refuses Boot 4 — so
+pinning 2.4.0 kills the gateway at startup. 2.4.0's separate `resilience4j-spring-boot4` starter
+can't be mixed in without splitting the line. Re-check when Spring Cloud moves to the boot4 starter.
+
 ```bash
 cd circuit-breaker-service
 mvn spring-boot:run                                     # port 8081

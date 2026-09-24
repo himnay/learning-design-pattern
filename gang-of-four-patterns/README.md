@@ -5,7 +5,7 @@
 - Patterns actively used by Spring Boot / Spring Cloud are shown in a **Spring Boot in Practice** subsection with a dedicated `spring/` subpackage
 
 **Base package:** `com.org.pattern.gangoffour`  
-**Java version:** 25 | **Spring Boot:** 4.1.0
+**Java version:** 25 | **Spring Boot:** 4.1.1 (as of 2026)
 
 ---
 
