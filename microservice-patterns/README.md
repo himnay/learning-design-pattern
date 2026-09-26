@@ -97,6 +97,16 @@ flowchart LR
     GW -.->|on failure/CB open| FB[GatewayFallbackController<br/>/fallback/quotes]
 ```
 
+Under the hood every request takes the same path through Spring Cloud Gateway: the handler mapping matches a
+route, the web handler runs that route's filter chain (pre-filters on the way in, post-filters on the way out),
+and the proxy filter forwards to the downstream service:
+
+<p align="center">
+  <img src="image/spring-cloud-gateway-how-it-works.png" alt="Gateway client, then Gateway Handler Mapping, Gateway Web Handler, filter chain and proxy filter, then the proxied service" width="300"/>
+</p>
+
+<p align="center"><sub>Diagram: <a href="https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/how-it-works.html">Spring Cloud Gateway reference — How it works</a>, Apache-2.0.</sub></p>
+
 ### <span style="color:hsl(148,80%,58%)">What's actually in the code</span>
 
 | File                                      | Role                                                                                                                                                                            |
@@ -167,6 +177,12 @@ sequenceDiagram
 **Intent:** Maintain data consistency across multiple services that each own their own
 database, when a single business transaction spans more than one service — without a
 distributed (two-phase-commit) transaction.
+
+<p align="center">
+  <img src="image/saga-overview.png" alt="Saga: a chain of services, each committing a local transaction and emitting a message or event that triggers the next" width="620"/>
+</p>
+
+<p align="center"><sub>Diagram: <a href="https://learn.microsoft.com/azure/architecture/patterns/saga">Azure Architecture Center — Saga pattern</a>, CC BY 4.0. <code>learning-axon</code> implements an orchestrated saga end to end.</sub></p>
 
 **Problem it solves:** Placing an order might require debiting payment, reserving stock,
 and creating a shipment — three services, three databases. A saga runs the operation as a

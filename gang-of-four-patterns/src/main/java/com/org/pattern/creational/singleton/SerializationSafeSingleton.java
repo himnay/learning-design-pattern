@@ -19,7 +19,9 @@ public final class SerializationSafeSingleton implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private static SerializationSafeSingleton instance;
+    // volatile: without it double-checked locking can hand another thread a reference to a
+    // not-yet-constructed object (the write of the reference may be reordered before the constructor).
+    private static volatile SerializationSafeSingleton instance;
 
     private SerializationSafeSingleton() {
         if (instance != null) {

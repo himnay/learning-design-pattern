@@ -12,7 +12,7 @@ package com.org.pattern.creational.singleton;
  *   - The outer null-check avoids acquiring the lock on every call after initialization.
  *   - The inner null-check handles the race where two threads pass the outer check.
  *
- * Fix B — Initialization-on-Demand Holder (shown as inner class):
+ * Fix B — Initialization-on-Demand Holder: see {@link HolderSingleton}.
  *   - JVM class loading guarantees that the Holder inner class is only initialized once,
  *     even under concurrent access — no synchronization needed.
  */
@@ -39,16 +39,9 @@ public class ThreadSafeSingleton {
         return instance;
     }
 
-    // Fix B: Initialization-on-Demand Holder (alternative — no volatile needed)
-    public static ThreadSafeSingleton getInstanceViaHolder() {
-        return Holder.INSTANCE;
-    }
+    // Fix B, the Initialization-on-Demand Holder idiom, lives in HolderSingleton: a second way of
+    // creating this same class would trip the constructor guard above.
 
-    private static final class Holder {
-        private static final ThreadSafeSingleton INSTANCE = new ThreadSafeSingleton();
-    }
-
-    /** Demoes. */
     public static void demo() throws InterruptedException {
         System.out.println("=== Singleton — Thread-Safety Demo ===");
         Runnable task = () -> {
@@ -63,6 +56,6 @@ public class ThreadSafeSingleton {
         t1.start(); t2.start(); t3.start();
         t1.join(); t2.join(); t3.join();
 
-        System.out.println("Holder variant: " + ThreadSafeSingleton.getInstanceViaHolder().hashCode());
+        System.out.println("Holder variant (HolderSingleton): " + HolderSingleton.getInstance().hashCode());
     }
 }

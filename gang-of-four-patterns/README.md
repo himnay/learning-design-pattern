@@ -88,7 +88,8 @@
 |-----------------------------------|-------------------------------------------------------------------|
 | `DatabaseConnection.java`         | Basic thread-safe singleton — double-checked locking + `volatile` |
 | `ReflectionSafeSingleton.java`    | Guard against Reflection attack                                   |
-| `ThreadSafeSingleton.java`        | Double-checked locking + Initialization-on-Demand Holder          |
+| `ThreadSafeSingleton.java`        | Double-checked locking + `volatile`                               |
+| `HolderSingleton.java`            | Initialization-on-Demand Holder idiom (lazy, no locking)          |
 | `SerializationSafeSingleton.java` | Guard against Serialization attack via `readResolve()`            |
 | `CloneSafeSingleton.java`         | Guard against Cloning attack                                      |
 | `SingletonEnum.java`              | Enum-based singleton — immune to all four attacks                 |
@@ -112,16 +113,19 @@ classDiagram
     class ThreadSafeSingleton {
         -static volatile ThreadSafeSingleton instance
         +static getInstance() ThreadSafeSingleton
-        +static getInstanceViaHolder() ThreadSafeSingleton
+    }
+    class HolderSingleton {
+        -HolderSingleton() : throws if Holder.INSTANCE != null
+        +static getInstance() HolderSingleton
         -static class Holder
     }
     class SerializationSafeSingleton {
-        -static SerializationSafeSingleton instance
+        -static volatile SerializationSafeSingleton instance
         +static getInstance() SerializationSafeSingleton
         #readResolve() Object
     }
     class CloneSafeSingleton {
-        -static CloneSafeSingleton instance
+        -static volatile CloneSafeSingleton instance
         +static getInstance() CloneSafeSingleton
         #clone() Object : throws CloneNotSupportedException
     }
@@ -224,29 +228,36 @@ public static ThreadSafeSingleton getInstance() {
 }
 ```
 
-**Fix B — Initialization-on-Demand Holder (preferred, no `volatile` needed):**
+**Fix B — Initialization-on-Demand Holder (`HolderSingleton.java`, preferred, no `volatile` needed):**
 
 ```java
-public static ThreadSafeSingleton getInstanceViaHolder() {
+public static HolderSingleton getInstance() {
     return Holder.INSTANCE;
 }
 
 private static final class Holder {
-    private static final ThreadSafeSingleton INSTANCE = new ThreadSafeSingleton();
+    private static final HolderSingleton INSTANCE = new HolderSingleton();
 }
 ```
 
 - The JVM guarantees that the `Holder` inner class is only initialized once, even under concurrent access
 - The class loader handles the synchronization — no `synchronized` block or `volatile` required
 - This is the cleanest thread-safe approach short of using an enum
+- It lives in its own class on purpose: two creation paths for one class would trip the constructor's
+  "already created" guard — whichever path ran second failed (the holder's initializer threw
+  `ExceptionInInitializerError`)
 
-**Demo output:**
+**Demo output** (the holder variant is a different class, so a different instance):
 ```
 Thread-1 got: 987654321
 Thread-2 got: 987654321
 Thread-3 got: 987654321
-Holder variant: 987654321
+Holder variant (HolderSingleton): 123456789
 ```
+
+`SingletonGuardsTest` checks every variant: 32 concurrent callers see one instance (DCL and holder), reflection is
+refused, deserialization returns the existing object, `clone()` throws, and enum constants cannot be created
+reflectively.
 
 ---
 
@@ -597,7 +608,7 @@ classDiagram
         +glutenFree(boolean) Builder
         +build() Pizza
     }
-    Pizza +-- Builder : static inner class
+    Pizza -- Builder : static nested class
     Builder ..> Pizza : constructs
 ```
 

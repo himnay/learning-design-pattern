@@ -11,7 +11,9 @@ package com.org.pattern.creational.singleton;
  */
 public class CloneSafeSingleton implements Cloneable {
 
-    private static CloneSafeSingleton instance;
+    // volatile: without it double-checked locking can hand another thread a reference to a
+    // not-yet-constructed object (the write of the reference may be reordered before the constructor).
+    private static volatile CloneSafeSingleton instance;
 
     private CloneSafeSingleton() {
         if (instance != null) {
