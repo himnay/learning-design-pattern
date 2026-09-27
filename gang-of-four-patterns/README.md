@@ -11,21 +11,21 @@
 
 ## <span style="color:hsl(198,80%,58%)">GoF → Spring Boot / Spring Cloud Mapping</span>
 
-| GoF Pattern                 | Category   | Spring / Spring Cloud usage                                                                                                                          |
-|-----------------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Singleton**               | Creational | Default `@Bean` / `@Component` scope in `ApplicationContext`                                                                                         |
-| **Factory Method**          | Creational | `BeanFactory`, `ApplicationContext`, `@Bean` factory methods, `@ConditionalOnXxx`                                                                    |
-| **Builder**                 | Creational | `UriComponentsBuilder`, `WebClient.Builder`, `RestClient.Builder`, `RestTemplateBuilder`, `SpringApplicationBuilder`, `AuthenticationManagerBuilder` |
-| **Prototype**               | Creational | `@Scope("prototype")` beans, `Provider<T>` injection                                                                                                 |
-| **Adapter**                 | Structural | `JdbcTemplate`, `MongoTemplate`, `RedisTemplate`, `KafkaTemplate`, `AmqpTemplate`, `RestTemplate`                                                    |
-| **Composite**               | Structural | `CompositePropertySource`, Spring Environment property hierarchy, Spring Cloud Config                                                                |
-| **Decorator**               | Structural | Resilience4j (`@CircuitBreaker`, `@Retry`, `@RateLimiter`, `@Bulkhead`), `java.io.*` streams                                                         |
-| **Proxy**                   | Structural | Spring AOP — `@Transactional`, `@Async`, `@Cacheable`, `@Secured`, CGLIB / JDK dynamic proxies                                                       |
-| **Chain of Responsibility** | Behavioral | Spring Security filter chain, Spring Cloud Gateway route filters, Servlet `Filter` chain                                                             |
-| **Observer**                | Behavioral | `ApplicationEvent`, `@EventListener`, `ApplicationListener`, Spring Cloud Bus                                                                        |
-| **State**                   | Behavioral | Spring State Machine (`spring-statemachine`)                                                                                                         |
-| **Strategy**                | Behavioral | `@ConditionalOnProperty`, `@Profile`, injecting `List<Strategy>`, Spring Security auth providers                                                     |
-| **Template Method**         | Behavioral | `JdbcTemplate`, `RestTemplate`, `TransactionTemplate`, `JmsTemplate`, `MongoTemplate`, `RedisTemplate`                                               |
+| GoF Pattern                 | Category   | Spring / Spring Cloud usage                                                                                                                                                                                                                                                                |
+|-----------------------------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Singleton**               | Creational | Default [`@Bean`][Bean] / [`@Component`][Component] scope in [`ApplicationContext`][ApplicationContext]                                                                                                                                                                                    |
+| **Factory Method**          | Creational | [`BeanFactory`][BeanFactory], `ApplicationContext`, `@Bean` factory methods, `@ConditionalOnXxx`                                                                                                                                                                                           |
+| **Builder**                 | Creational | [`UriComponentsBuilder`][UriComponentsBuilder], [`WebClient.Builder`][WebClient], [`RestClient.Builder`][RestClient], [`RestTemplateBuilder`][RestTemplateBuilder], [`SpringApplicationBuilder`][SpringApplicationBuilder], [`AuthenticationManagerBuilder`][AuthenticationManagerBuilder] |
+| **Prototype**               | Creational | [`@Scope("prototype")`][Scope] beans, `Provider<T>` injection                                                                                                                                                                                                                              |
+| **Adapter**                 | Structural | [`JdbcTemplate`][JdbcTemplate], [`MongoTemplate`][MongoTemplate], [`RedisTemplate`][RedisTemplate], [`KafkaTemplate`][KafkaTemplate], [`AmqpTemplate`][AmqpTemplate], [`RestTemplate`][RestTemplate]                                                                                       |
+| **Composite**               | Structural | [`CompositePropertySource`][CompositePropertySource], Spring Environment property hierarchy, Spring Cloud Config                                                                                                                                                                           |
+| **Decorator**               | Structural | Resilience4j ([`@CircuitBreaker`][CircuitBreaker], [`@Retry`][Retry], [`@RateLimiter`][RateLimiter], [`@Bulkhead`][Bulkhead]), `java.io.*` streams                                                                                                                                         |
+| **Proxy**                   | Structural | Spring AOP — [`@Transactional`][Transactional], [`@Async`][Async], [`@Cacheable`][Cacheable], [`@Secured`][Secured], CGLIB / JDK dynamic proxies                                                                                                                                           |
+| **Chain of Responsibility** | Behavioral | Spring Security filter chain, Spring Cloud Gateway route filters, Servlet [`Filter`][Filter] chain                                                                                                                                                                                         |
+| **Observer**                | Behavioral | [`ApplicationEvent`][ApplicationEvent], [`@EventListener`][EventListener], [`ApplicationListener`][ApplicationListener], Spring Cloud Bus                                                                                                                                                  |
+| **State**                   | Behavioral | Spring State Machine (`spring-statemachine`)                                                                                                                                                                                                                                               |
+| **Strategy**                | Behavioral | [`@ConditionalOnProperty`][ConditionalOnProperty], [`@Profile`][Profile], injecting [`List<Strategy>`][List], Spring Security auth providers                                                                                                                                               |
+| **Template Method**         | Behavioral | `JdbcTemplate`, `RestTemplate`, [`TransactionTemplate`][TransactionTemplate], [`JmsTemplate`][JmsTemplate], `MongoTemplate`, `RedisTemplate`                                                                                                                                               |
 
 ---
 
@@ -80,7 +80,7 @@
 - Logging services
 - Thread pools
 
-> **Spring note:** Spring IoC manages beans in singleton scope by default (`@Bean`, `@Component`). Understanding the four ways a singleton can be broken — and how to defend against each — is essential when implementing your own.
+> **Spring note:** Spring IoC manages beans in singleton scope by default ([`@Bean`][Bean], [`@Component`][Component]). Understanding the four ways a singleton can be broken — and how to defend against each — is essential when implementing your own.
 
 **Package:** `creational/singleton`
 
@@ -184,7 +184,7 @@ ctors[0].setAccessible(true);
 Singleton second = (Singleton) ctors[0].newInstance(); // breaks naive singleton
 ```
 
-**The fix:** Guard inside the private constructor — throw `IllegalStateException` if the instance already exists.
+**The fix:** Guard inside the private constructor — throw [`IllegalStateException`][IllegalStateException] if the instance already exists.
 
 ```java
 private ReflectionSafeSingleton() {
@@ -245,7 +245,7 @@ private static final class Holder {
 - This is the cleanest thread-safe approach short of using an enum
 - It lives in its own class on purpose: two creation paths for one class would trip the constructor's
   "already created" guard — whichever path ran second failed (the holder's initializer threw
-  `ExceptionInInitializerError`)
+  [`ExceptionInInitializerError`][ExceptionInInitializerError])
 
 **Demo output** (the holder variant is a different class, so a different instance):
 ```
@@ -263,7 +263,7 @@ reflectively.
 
 ##### <span style="color:hsl(218,80%,58%)">Hack 3 — Serialization (`SerializationSafeSingleton.java`)</span>
 
-**The attack:** When a `Serializable` singleton is deserialized, Java bypasses the constructor and creates a fresh object — a different instance from the original.
+**The attack:** When a [`Serializable`][Serializable] singleton is deserialized, Java bypasses the constructor and creates a fresh object — a different instance from the original.
 
 ```java
 ObjectOutputStream out = new ObjectOutputStream(...);
@@ -295,13 +295,13 @@ Same instance? true
 
 ##### <span style="color:hsl(355,80%,58%)">Hack 4 — Cloning (`CloneSafeSingleton.java`)</span>
 
-**The attack:** If the singleton class implements `Cloneable` (or inherits it), `clone()` bypasses the constructor and produces a shallow copy — a second independent instance.
+**The attack:** If the singleton class implements [`Cloneable`][Cloneable] (or inherits it), `clone()` bypasses the constructor and produces a shallow copy — a second independent instance.
 
 ```java
 CloneSafeSingleton cloned = (CloneSafeSingleton) original.clone(); // second instance
 ```
 
-**The fix:** Override `clone()` and throw `CloneNotSupportedException` unconditionally — even if the class implements `Cloneable`.
+**The fix:** Override `clone()` and throw [`CloneNotSupportedException`][CloneNotSupportedException] unconditionally — even if the class implements `Cloneable`.
 
 ```java
 @Override
@@ -324,12 +324,12 @@ Attack blocked: Cloning a Singleton is not allowed.
 - Best Singleton implementation in Java, as recommended by Joshua Bloch (*Effective Java*, Item 3)
 - The JVM gives you all four guarantees for free
 
-| Threat          | How enum handles it                                                                       |
-|-----------------|-------------------------------------------------------------------------------------------|
-| Reflection      | JVM throws `IllegalArgumentException` if you try to reflectively instantiate an enum      |
-| Multi-threading | Enum constants are class-loaded once; JVM class loading is thread-safe                    |
-| Serialization   | Java serializes enums by name and always returns the existing constant on deserialization |
-| Cloning         | `java.lang.Enum` does not implement `Cloneable`; `clone()` throws unconditionally         |
+| Threat          | How enum handles it                                                                                              |
+|-----------------|------------------------------------------------------------------------------------------------------------------|
+| Reflection      | JVM throws [`IllegalArgumentException`][IllegalArgumentException] if you try to reflectively instantiate an enum |
+| Multi-threading | Enum constants are class-loaded once; JVM class loading is thread-safe                                           |
+| Serialization   | Java serializes enums by name and always returns the existing constant on deserialization                        |
+| Cloning         | [`java.lang.Enum`][Enum] does not implement [`Cloneable`][Cloneable]; `clone()` throws unconditionally           |
 
 ```java
 public enum SingletonEnum {
@@ -387,7 +387,7 @@ Same instance? true
 **Spring Boot in Practice** — `creational/singleton/spring/SpringSingletonBean.java`
 
 - Spring's IoC container IS the Singleton pattern
-- Every `@Bean`, `@Component`, `@Service` is singleton-scoped by default — no `volatile`, `synchronized`, or double-check needed
+- Every [`@Bean`][Bean], [`@Component`][Component], [`@Service`][Service] is singleton-scoped by default — no `volatile`, `synchronized`, or double-check needed
 - The container handles thread-safe instantiation and lifecycle management automatically
 
 ```java
@@ -468,9 +468,9 @@ Push notification to device [user@example.com]: Your order has been shipped!
 
 **Spring Boot in Practice** — `creational/factorymethod/spring/SpringBeanFactory.java`
 
-- Spring's `BeanFactory` and `ApplicationContext` ARE the Factory Method pattern
-- `@Bean` methods are factory methods — the caller requests an interface, Spring decides which concrete class to return
-- `@ConditionalOnProperty` selects the concrete implementation at startup based on configuration
+- Spring's [`BeanFactory`][BeanFactory] and [`ApplicationContext`][ApplicationContext] ARE the Factory Method pattern
+- [`@Bean`][Bean] methods are factory methods — the caller requests an interface, Spring decides which concrete class to return
+- [`@ConditionalOnProperty`][ConditionalOnProperty] selects the concrete implementation at startup based on configuration
 
 ```java
 @Configuration
@@ -724,7 +724,7 @@ classDiagram
     ShapeRegistry o--> Shape : caches prototypes
 ```
 
-- Every concrete shape implements `clone()` via a **copy constructor** (`Circle(Circle source)`), not `Object.clone()` — each field is explicitly copied so deep-copy intent is visible in code, not hidden behind bitwise copy semantics
+- Every concrete shape implements `clone()` via a **copy constructor** (`Circle(Circle source)`), not [`Object.clone()`][Object] — each field is explicitly copied so deep-copy intent is visible in code, not hidden behind bitwise copy semantics
 - `ShapeRegistry.get(key)` returns a fresh clone of the cached prototype, so callers never mutate the shared template
 
 **Key implementation detail:**
@@ -741,7 +741,7 @@ public Circle clone() {
 }
 ```
 
-- Uses copy constructors instead of `Cloneable` to avoid Java's shallow `Object.clone()` pitfalls
+- Uses copy constructors instead of [`Cloneable`][Cloneable] to avoid Java's shallow `Object.clone()` pitfalls
 - Each field is explicitly copied, making deep-copy intent visible and verifiable
 
 **Demo output:**
@@ -773,7 +773,7 @@ class CheckoutService {
 ShoppingCart fresh = cartProvider.get();  // new instance each time
 ```
 
-> **Gotcha:** injecting a `@Scope("prototype")` bean directly via `@Autowired` into a singleton only creates ONE instance. Always use `ApplicationContext.getBean()` or `Provider<T>` for true per-call creation.
+> **Gotcha:** injecting a [`@Scope("prototype")`][Scope] bean directly via [`@Autowired`][Autowired] into a singleton only creates ONE instance. Always use [`ApplicationContext.getBean()`][ApplicationContext] or `Provider<T>` for true per-call creation.
 
 ---
 
@@ -1020,7 +1020,7 @@ Total size: 7680 bytes
 
 **Spring Boot in Practice** — `structural/composite/spring/SpringCompositePropertySource.java`
 
-- Spring's `Environment` IS a Composite of `PropertySource` leaves
+- Spring's [`Environment`][Environment] IS a Composite of [`PropertySource`][PropertySource] leaves
 - Spring Boot merges many sources transparently — application code just calls `env.getProperty("key")`
 - Sources are checked in priority order; first match wins
 
@@ -1051,7 +1051,7 @@ private int port;
 **When to use:**
 - Adding behavior to individual objects without affecting others of the same class
 - When subclassing leads to an explosion of classes
-- Java I/O streams (`BufferedReader` wrapping `FileReader`)
+- Java I/O streams ([`BufferedReader`][BufferedReader] wrapping [`FileReader`][FileReader])
 
 **Package:** `structural/decorator`
 
@@ -1350,7 +1350,7 @@ RealImage: Displaying 'photo.jpg'
 **Spring Boot in Practice** — `structural/proxy/spring/SpringAopProxy.java`
 
 - Spring AOP IS the Proxy pattern
-- Every `@Transactional`, `@Async`, `@Cacheable`, or `@Aspect` annotation instructs Spring to wrap the bean in a CGLIB or JDK dynamic proxy
+- Every [`@Transactional`][Transactional], [`@Async`][Async], [`@Cacheable`][Cacheable], or [`@Aspect`][Aspect] annotation instructs Spring to wrap the bean in a CGLIB or JDK dynamic proxy
 - The proxy intercepts the method call, runs the cross-cutting concern, then delegates to the real object
 
 ```java
@@ -1447,7 +1447,7 @@ L3 Engineering resolved ticket #3: Data corruption in prod
 **Spring Boot in Practice** — `behavioral/chainofresponsibility/spring/SpringSecurityFilterChain.java`
 
 - Spring Security's filter chain IS Chain of Responsibility
-- Each `Filter` handles one concern and calls `chain.doFilter()` to pass the request forward — or short-circuits with an error response
+- Each [`Filter`][Filter] handles one concern and calls `chain.doFilter()` to pass the request forward — or short-circuits with an error response
 - Spring Cloud Gateway route filters use the same pattern at the API gateway level
 
 ```java
@@ -1553,10 +1553,10 @@ Undo -> Bedroom light: OFF
 
 **Package:** `behavioral/iterator`
 
-| File                  | Role                                                                            |
-|-----------------------|---------------------------------------------------------------------------------|
-| `Book.java`           | Element type                                                                    |
-| `BookCollection.java` | Aggregate — implements `Iterable<Book>`, provides forward and reverse iterators |
+| File                  | Role                                                                                        |
+|-----------------------|---------------------------------------------------------------------------------------------|
+| `Book.java`           | Element type                                                                                |
+| `BookCollection.java` | Aggregate — implements [`Iterable<Book>`][Iterable], provides forward and reverse iterators |
 
 **Structure:**
 
@@ -1578,7 +1578,7 @@ classDiagram
     BookCollection o--> Book
 ```
 
-- `BookCollection` implements `java.lang.Iterable<Book>`, so it plugs directly into Java's for-each syntax while hiding the underlying `ArrayList<Book>`
+- `BookCollection` implements `java.lang.Iterable<Book>`, so it plugs directly into Java's for-each syntax while hiding the underlying [`ArrayList<Book>`][ArrayList]
 - `reverseIterator()` returns a second, independent traversal strategy over the same backing list, demonstrating that a single aggregate can expose multiple iteration orders without exposing its storage
 
 **Key implementation detail:**
@@ -1698,7 +1698,7 @@ sequenceDiagram
     Editor->>Editor: content = memento.getContent()
 ```
 
-- `EditorHistory` (caretaker) stores `EditorMemento` objects on a `Deque` but never reads or modifies their fields — it only knows how to `push()`/`pop()`, which is what preserves `TextEditor`'s encapsulation
+- `EditorHistory` (caretaker) stores `EditorMemento` objects on a [`Deque`][Deque] but never reads or modifies their fields — it only knows how to `push()`/`pop()`, which is what preserves `TextEditor`'s encapsulation
 - Only `TextEditor` (the originator) can create (`save()`) or apply (`restore()`) a memento, since `EditorMemento`'s fields are only accessible to it
 
 **Key implementation detail:**
@@ -1735,7 +1735,7 @@ Undo -> Editor{content='Hello', cursor=5}
 - Event-driven architectures
 - MVC — model notifies views of changes
 - Message brokers, reactive programming
-- Spring `ApplicationEvent` system
+- Spring [`ApplicationEvent`][ApplicationEvent] system
 
 **Package:** `behavioral/observer`
 
@@ -1788,7 +1788,7 @@ public void setPrice(double newPrice) {
 
 **Spring Boot in Practice** — `behavioral/observer/spring/SpringApplicationEventObserver.java`
 
-- Spring's `ApplicationEvent` / `@EventListener` IS the Observer pattern
+- Spring's `ApplicationEvent` / [`@EventListener`][EventListener] IS the Observer pattern
 - Publishers have zero knowledge of their listeners — adding a new listener requires no change to the publisher
 - Spring Cloud Bus extends this across services via Kafka/RabbitMQ
 
@@ -1987,7 +1987,7 @@ MergeSort result: [1, 2, 3, 5, 8, 9]
 
 **Spring Boot in Practice** — `behavioral/strategy/spring/SpringConditionalStrategy.java`
 
-- Spring uses Strategy in two ways: selecting an implementation at startup via `@Conditional`, or injecting ALL implementations as `List<T>` and selecting at runtime by type
+- Spring uses Strategy in two ways: selecting an implementation at startup via [`@Conditional`][Conditional], or injecting ALL implementations as [`List<T>`][List] and selecting at runtime by type
 - The runtime selection approach (inject all, pick by key) is the most flexible and common in enterprise Spring code
 
 ```java
@@ -2312,3 +2312,60 @@ Compile and run tests:
 ```bash
 ./mvnw test
 ```
+
+<!-- Library classes mentioned above, linked to their source at the versions this project builds with. -->
+
+[AmqpTemplate]: https://github.com/spring-projects/spring-amqp/blob/v4.1.1/spring-amqp/src/main/java/org/springframework/amqp/core/AmqpTemplate.java
+[ApplicationContext]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/context/ApplicationContext.java
+[ApplicationEvent]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/context/ApplicationEvent.java
+[ApplicationListener]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/context/ApplicationListener.java
+[ArrayList]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/util/ArrayList.java
+[Aspect]: https://github.com/eclipse-aspectj/aspectj/blob/V1_9_25_1/runtime/src/main/java/org/aspectj/lang/annotation/Aspect.java
+[Async]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/scheduling/annotation/Async.java
+[AuthenticationManagerBuilder]: https://github.com/spring-projects/spring-security/blob/7.1.1/config/src/main/java/org/springframework/security/config/annotation/authentication/builders/AuthenticationManagerBuilder.java
+[Autowired]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-beans/src/main/java/org/springframework/beans/factory/annotation/Autowired.java
+[Bean]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/context/annotation/Bean.java
+[BeanFactory]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-beans/src/main/java/org/springframework/beans/factory/BeanFactory.java
+[BufferedReader]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/io/BufferedReader.java
+[Bulkhead]: https://github.com/resilience4j/resilience4j/blob/v2.3.0/resilience4j-annotations/src/main/java/io/github/resilience4j/bulkhead/annotation/Bulkhead.java
+[Cacheable]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/cache/annotation/Cacheable.java
+[CircuitBreaker]: https://github.com/resilience4j/resilience4j/blob/v2.3.0/resilience4j-annotations/src/main/java/io/github/resilience4j/circuitbreaker/annotation/CircuitBreaker.java
+[Cloneable]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/lang/Cloneable.java
+[CloneNotSupportedException]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/lang/CloneNotSupportedException.java
+[Component]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/stereotype/Component.java
+[CompositePropertySource]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-core/src/main/java/org/springframework/core/env/CompositePropertySource.java
+[Conditional]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/context/annotation/Conditional.java
+[ConditionalOnProperty]: https://github.com/spring-projects/spring-boot/blob/v4.1.1/core/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/condition/ConditionalOnProperty.java
+[Deque]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/util/Deque.java
+[Enum]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/lang/Enum.java
+[Environment]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-core/src/main/java/org/springframework/core/env/Environment.java
+[EventListener]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/context/event/EventListener.java
+[ExceptionInInitializerError]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/lang/ExceptionInInitializerError.java
+[FileReader]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/io/FileReader.java
+[Filter]: https://github.com/apache/tomcat/blob/11.0.24/java/jakarta/servlet/Filter.java
+[IllegalArgumentException]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/lang/IllegalArgumentException.java
+[IllegalStateException]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/lang/IllegalStateException.java
+[Iterable]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/lang/Iterable.java
+[JdbcTemplate]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-jdbc/src/main/java/org/springframework/jdbc/core/JdbcTemplate.java
+[JmsTemplate]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-jms/src/main/java/org/springframework/jms/core/JmsTemplate.java
+[KafkaTemplate]: https://github.com/spring-projects/spring-kafka/blob/v4.1.1/spring-kafka/src/main/java/org/springframework/kafka/core/KafkaTemplate.java
+[List]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/util/List.java
+[MongoTemplate]: https://github.com/spring-projects/spring-data-mongodb/blob/5.1.1/spring-data-mongodb/src/main/java/org/springframework/data/mongodb/core/MongoTemplate.java
+[Object]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/lang/Object.java
+[Profile]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/context/annotation/Profile.java
+[PropertySource]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-core/src/main/java/org/springframework/core/env/PropertySource.java
+[RateLimiter]: https://github.com/resilience4j/resilience4j/blob/v2.3.0/resilience4j-annotations/src/main/java/io/github/resilience4j/ratelimiter/annotation/RateLimiter.java
+[RedisTemplate]: https://github.com/spring-projects/spring-data-redis/blob/4.1.1/src/main/java/org/springframework/data/redis/core/RedisTemplate.java
+[RestClient]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-web/src/main/java/org/springframework/web/client/RestClient.java
+[RestTemplate]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-web/src/main/java/org/springframework/web/client/RestTemplate.java
+[RestTemplateBuilder]: https://github.com/spring-projects/spring-boot/blob/v4.1.1/module/spring-boot-restclient/src/main/java/org/springframework/boot/restclient/RestTemplateBuilder.java
+[Retry]: https://github.com/resilience4j/resilience4j/blob/v2.3.0/resilience4j-annotations/src/main/java/io/github/resilience4j/retry/annotation/Retry.java
+[Scope]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/context/annotation/Scope.java
+[Secured]: https://github.com/spring-projects/spring-security/blob/7.1.1/core/src/main/java/org/springframework/security/access/annotation/Secured.java
+[Serializable]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/io/Serializable.java
+[Service]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/stereotype/Service.java
+[SpringApplicationBuilder]: https://github.com/spring-projects/spring-boot/blob/v4.1.1/core/spring-boot/src/main/java/org/springframework/boot/builder/SpringApplicationBuilder.java
+[Transactional]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-tx/src/main/java/org/springframework/transaction/annotation/Transactional.java
+[TransactionTemplate]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-tx/src/main/java/org/springframework/transaction/support/TransactionTemplate.java
+[UriComponentsBuilder]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-web/src/main/java/org/springframework/web/util/UriComponentsBuilder.java
+[WebClient]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-webflux/src/main/java/org/springframework/web/reactive/function/client/WebClient.java

@@ -50,16 +50,16 @@ stateDiagram-v2
 
 ### <span style="color:hsl(233,80%,58%)">What's actually in the code</span>
 
-| File                               | Role                                                                                                                                          |
-|------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| `api/QuoteController.java`         | `GET /api/quotes` — the protected endpoint                                                                                                    |
-| `api/ChaosController.java`         | `POST /api/chaos?failRate=N` — dials how often the downstream fails, for demoing the breaker live                                             |
-| `downstream/FlakyQuoteClient.java` | Simulated downstream; throws `DownstreamUnavailableException` at the configured fail rate                                                     |
-| `service/QuoteService.java`        | `@CircuitBreaker(name="quoteService", fallbackMethod="fallback")` + `@Retry(name="quoteService")` wrapping the flaky call                     |
-| `application.yaml`                 | Resilience4j tuning: `sliding-window-size: 10`, `minimum-number-of-calls: 5`, `failure-rate-threshold: 50`, `wait-duration-in-open-state: 5s` |
+| File                               | Role                                                                                                                                                 |
+|------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `api/QuoteController.java`         | `GET /api/quotes` — the protected endpoint                                                                                                           |
+| `api/ChaosController.java`         | `POST /api/chaos?failRate=N` — dials how often the downstream fails, for demoing the breaker live                                                    |
+| `downstream/FlakyQuoteClient.java` | Simulated downstream; throws `DownstreamUnavailableException` at the configured fail rate                                                            |
+| `service/QuoteService.java`        | [`@CircuitBreaker(name="quoteService", fallbackMethod="fallback")`][CircuitBreaker] + [`@Retry(name="quoteService")`][Retry] wrapping the flaky call |
+| `application.yaml`                 | Resilience4j tuning: `sliding-window-size: 10`, `minimum-number-of-calls: 5`, `failure-rate-threshold: 50`, `wait-duration-in-open-state: 5s`        |
 
 Boot 4.1 note: the standalone `spring-boot-starter-aop` wrapper artifact was dropped from
-the Boot BOM. Resilience4j's `@CircuitBreaker`/`@Retry` are `@Aspect` classes that still
+the Boot BOM. Resilience4j's `@CircuitBreaker`/`@Retry` are [`@Aspect`][Aspect] classes that still
 need `org.aspectj:aspectjweaver` on the classpath for pointcut parsing (proxy-based, not
 real weaving) — the pom depends on it directly; the BOM still manages its version.
 
@@ -109,11 +109,11 @@ and the proxy filter forwards to the downstream service:
 
 ### <span style="color:hsl(148,80%,58%)">What's actually in the code</span>
 
-| File                                      | Role                                                                                                                                                                            |
-|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `application.yaml`                        | Route: `Path=/quotes/**` → `SetPath=/api/quotes` on `circuit-breaker-service`, wrapped in a route-level `CircuitBreaker` filter (`fallbackUri: forward:/fallback/quotes`)       |
-| `filter/CorrelationIdGlobalFilter.java`   | `GlobalFilter` — stamps every request with `X-Correlation-Id` (propagates an incoming one, or mints a UUID), echoed on the response so client/gateway/backend logs share one id |
-| `fallback/GatewayFallbackController.java` | Target of the route's `fallbackUri` — returns a friendly JSON payload instead of surfacing the raw connection error                                                             |
+| File                                      | Role                                                                                                                                                                                            |
+|-------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `application.yaml`                        | Route: `Path=/quotes/**` → `SetPath=/api/quotes` on `circuit-breaker-service`, wrapped in a route-level `CircuitBreaker` filter (`fallbackUri: forward:/fallback/quotes`)                       |
+| `filter/CorrelationIdGlobalFilter.java`   | [`GlobalFilter`][GlobalFilter] — stamps every request with `X-Correlation-Id` (propagates an incoming one, or mints a UUID), echoed on the response so client/gateway/backend logs share one id |
+| `fallback/GatewayFallbackController.java` | Target of the route's `fallbackUri` — returns a friendly JSON payload instead of surfacing the raw connection error                                                                             |
 
 Uses `spring-cloud-starter-gateway-server-webflux` — the WebFlux-first rearchitected
 Gateway module (as opposed to the older `spring-cloud-starter-gateway`). One gotcha worth
@@ -154,7 +154,7 @@ service instead **registers** with a discovery server on startup (sending heartb
 and callers **look up** a healthy instance by logical service name.
 
 **Planned shape:** a `service-registry` module (`spring-cloud-starter-netflix-eureka-server`,
-`@EnableEurekaServer`) plus `@EnableDiscoveryClient` on both existing services, replacing
+[`@EnableEurekaServer`][EnableEurekaServer]) plus [`@EnableDiscoveryClient`][EnableDiscoveryClient] on both existing services, replacing
 the gateway's fixed `uri: http://localhost:8081` with a `lb://circuit-breaker-service`
 load-balanced URI.
 
@@ -217,7 +217,7 @@ dev/staging/prod without rebuilding, and config changes don't require a redeploy
 
 **Planned shape:** a `spring-cloud-config-server` module plus
 `spring.config.import=configserver:...` in both existing services — the same Composite
-pattern already used for Spring's `Environment`/`PropertySource` hierarchy, extended so one
+pattern already used for Spring's [`Environment`][Environment]/[`PropertySource`][PropertySource] hierarchy, extended so one
 composed property source is fetched remotely rather than only from local files.
 
 ---
@@ -236,3 +236,14 @@ Or run the whole aggregator's tests in one shot from `microservice-patterns/`:
 ```bash
 mvn test
 ```
+
+<!-- Library classes mentioned above, linked to their source at the versions this project builds with. -->
+
+[Aspect]: https://github.com/eclipse-aspectj/aspectj/blob/V1_9_25_1/runtime/src/main/java/org/aspectj/lang/annotation/Aspect.java
+[CircuitBreaker]: https://github.com/resilience4j/resilience4j/blob/v2.3.0/resilience4j-annotations/src/main/java/io/github/resilience4j/circuitbreaker/annotation/CircuitBreaker.java
+[EnableDiscoveryClient]: https://github.com/spring-cloud/spring-cloud-commons/blob/v5.0.3/spring-cloud-commons/src/main/java/org/springframework/cloud/client/discovery/EnableDiscoveryClient.java
+[EnableEurekaServer]: https://github.com/spring-cloud/spring-cloud-netflix/blob/v5.0.2/spring-cloud-netflix-eureka-server/src/main/java/org/springframework/cloud/netflix/eureka/server/EnableEurekaServer.java
+[Environment]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-core/src/main/java/org/springframework/core/env/Environment.java
+[GlobalFilter]: https://github.com/spring-cloud/spring-cloud-gateway/blob/v5.0.3/spring-cloud-gateway-server-webflux/src/main/java/org/springframework/cloud/gateway/filter/GlobalFilter.java
+[PropertySource]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-core/src/main/java/org/springframework/core/env/PropertySource.java
+[Retry]: https://github.com/resilience4j/resilience4j/blob/v2.3.0/resilience4j-annotations/src/main/java/io/github/resilience4j/retry/annotation/Retry.java

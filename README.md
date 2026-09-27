@@ -39,7 +39,7 @@ Design patterns are usually taught as one flat list, but they solve problems at 
 
 </ul>
 
-A useful way to see the connection: several microservice patterns are literally a GoF pattern applied across a network boundary instead of within one JVM. For example, Chain of Responsibility inside one service (a servlet filter chain) becomes an API Gateway's filter pipeline across services; the Observer pattern inside one service (`ApplicationEventPublisher`/`@EventListener`) becomes a choreography-style Saga across services, mediated by a message broker instead of an in-process publisher. The `gang-of-four-patterns` README calls these connections out explicitly wherever the code demonstrates them.
+A useful way to see the connection: several microservice patterns are literally a GoF pattern applied across a network boundary instead of within one JVM. For example, Chain of Responsibility inside one service (a servlet filter chain) becomes an API Gateway's filter pipeline across services; the Observer pattern inside one service ([`ApplicationEventPublisher`][ApplicationEventPublisher]/[`@EventListener`][EventListener]) becomes a choreography-style Saga across services, mediated by a message broker instead of an in-process publisher. The `gang-of-four-patterns` README calls these connections out explicitly wherever the code demonstrates them.
 
 ```mermaid
 flowchart TB
@@ -90,3 +90,8 @@ For the full pattern-by-pattern reference — intent, problem statement, exact c
 - **[`microservice-patterns/README.md`](microservice-patterns/README.md)** — current status and pattern roadmap for the microservices module
 
 </ul>
+
+<!-- Library classes mentioned above, linked to their source at the versions this project builds with. -->
+
+[ApplicationEventPublisher]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/context/ApplicationEventPublisher.java
+[EventListener]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/context/event/EventListener.java
