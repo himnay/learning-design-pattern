@@ -16,8 +16,8 @@ A Java / Spring Boot repository for studying software design patterns by impleme
 
 ```
 learning-design-pattern/
-├── gang-of-four-patterns/     Classic GoF patterns — Java 25, Spring Boot 4.1.1
-└── microservice-patterns/     Distributed-systems patterns — Java 25, Spring Boot 4.1.1
+├── gang-of-four-patterns/     Classic GoF patterns — Java 27, Spring Boot 4.1.1
+└── microservice-patterns/     Distributed-systems patterns — Java 27, Spring Boot 4.1.1
 ```
 
 | Module                                                     | What it is                                                                                                                                                                                                                                           | Status                                                     |

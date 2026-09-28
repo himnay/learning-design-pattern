@@ -5,7 +5,7 @@
 - Patterns actively used by Spring Boot / Spring Cloud are shown in a **Spring Boot in Practice** subsection with a dedicated `spring/` subpackage
 
 **Base package:** `com.org.pattern.gangoffour`  
-**Java version:** 25 | **Spring Boot:** 4.1.1 (as of 2026)
+**Java version:** 27 | **Spring Boot:** 4.1.1 (as of Sep 2026)
 
 ---
 
@@ -2319,39 +2319,39 @@ Compile and run tests:
 [ApplicationContext]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/context/ApplicationContext.java
 [ApplicationEvent]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/context/ApplicationEvent.java
 [ApplicationListener]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/context/ApplicationListener.java
-[ArrayList]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/util/ArrayList.java
+[ArrayList]: https://github.com/openjdk/jdk/blob/jdk-27-ga/src/java.base/share/classes/java/util/ArrayList.java
 [Aspect]: https://github.com/eclipse-aspectj/aspectj/blob/V1_9_25_1/runtime/src/main/java/org/aspectj/lang/annotation/Aspect.java
 [Async]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/scheduling/annotation/Async.java
 [AuthenticationManagerBuilder]: https://github.com/spring-projects/spring-security/blob/7.1.1/config/src/main/java/org/springframework/security/config/annotation/authentication/builders/AuthenticationManagerBuilder.java
 [Autowired]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-beans/src/main/java/org/springframework/beans/factory/annotation/Autowired.java
 [Bean]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/context/annotation/Bean.java
 [BeanFactory]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-beans/src/main/java/org/springframework/beans/factory/BeanFactory.java
-[BufferedReader]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/io/BufferedReader.java
+[BufferedReader]: https://github.com/openjdk/jdk/blob/jdk-27-ga/src/java.base/share/classes/java/io/BufferedReader.java
 [Bulkhead]: https://github.com/resilience4j/resilience4j/blob/v2.3.0/resilience4j-annotations/src/main/java/io/github/resilience4j/bulkhead/annotation/Bulkhead.java
 [Cacheable]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/cache/annotation/Cacheable.java
 [CircuitBreaker]: https://github.com/resilience4j/resilience4j/blob/v2.3.0/resilience4j-annotations/src/main/java/io/github/resilience4j/circuitbreaker/annotation/CircuitBreaker.java
-[Cloneable]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/lang/Cloneable.java
-[CloneNotSupportedException]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/lang/CloneNotSupportedException.java
+[Cloneable]: https://github.com/openjdk/jdk/blob/jdk-27-ga/src/java.base/share/classes/java/lang/Cloneable.java
+[CloneNotSupportedException]: https://github.com/openjdk/jdk/blob/jdk-27-ga/src/java.base/share/classes/java/lang/CloneNotSupportedException.java
 [Component]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/stereotype/Component.java
 [CompositePropertySource]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-core/src/main/java/org/springframework/core/env/CompositePropertySource.java
 [Conditional]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/context/annotation/Conditional.java
 [ConditionalOnProperty]: https://github.com/spring-projects/spring-boot/blob/v4.1.1/core/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/condition/ConditionalOnProperty.java
-[Deque]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/util/Deque.java
-[Enum]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/lang/Enum.java
+[Deque]: https://github.com/openjdk/jdk/blob/jdk-27-ga/src/java.base/share/classes/java/util/Deque.java
+[Enum]: https://github.com/openjdk/jdk/blob/jdk-27-ga/src/java.base/share/classes/java/lang/Enum.java
 [Environment]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-core/src/main/java/org/springframework/core/env/Environment.java
 [EventListener]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/context/event/EventListener.java
-[ExceptionInInitializerError]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/lang/ExceptionInInitializerError.java
-[FileReader]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/io/FileReader.java
+[ExceptionInInitializerError]: https://github.com/openjdk/jdk/blob/jdk-27-ga/src/java.base/share/classes/java/lang/ExceptionInInitializerError.java
+[FileReader]: https://github.com/openjdk/jdk/blob/jdk-27-ga/src/java.base/share/classes/java/io/FileReader.java
 [Filter]: https://github.com/apache/tomcat/blob/11.0.24/java/jakarta/servlet/Filter.java
-[IllegalArgumentException]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/lang/IllegalArgumentException.java
-[IllegalStateException]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/lang/IllegalStateException.java
-[Iterable]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/lang/Iterable.java
+[IllegalArgumentException]: https://github.com/openjdk/jdk/blob/jdk-27-ga/src/java.base/share/classes/java/lang/IllegalArgumentException.java
+[IllegalStateException]: https://github.com/openjdk/jdk/blob/jdk-27-ga/src/java.base/share/classes/java/lang/IllegalStateException.java
+[Iterable]: https://github.com/openjdk/jdk/blob/jdk-27-ga/src/java.base/share/classes/java/lang/Iterable.java
 [JdbcTemplate]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-jdbc/src/main/java/org/springframework/jdbc/core/JdbcTemplate.java
 [JmsTemplate]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-jms/src/main/java/org/springframework/jms/core/JmsTemplate.java
 [KafkaTemplate]: https://github.com/spring-projects/spring-kafka/blob/v4.1.1/spring-kafka/src/main/java/org/springframework/kafka/core/KafkaTemplate.java
-[List]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/util/List.java
+[List]: https://github.com/openjdk/jdk/blob/jdk-27-ga/src/java.base/share/classes/java/util/List.java
 [MongoTemplate]: https://github.com/spring-projects/spring-data-mongodb/blob/5.1.1/spring-data-mongodb/src/main/java/org/springframework/data/mongodb/core/MongoTemplate.java
-[Object]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/lang/Object.java
+[Object]: https://github.com/openjdk/jdk/blob/jdk-27-ga/src/java.base/share/classes/java/lang/Object.java
 [Profile]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/context/annotation/Profile.java
 [PropertySource]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-core/src/main/java/org/springframework/core/env/PropertySource.java
 [RateLimiter]: https://github.com/resilience4j/resilience4j/blob/v2.3.0/resilience4j-annotations/src/main/java/io/github/resilience4j/ratelimiter/annotation/RateLimiter.java
@@ -2362,7 +2362,7 @@ Compile and run tests:
 [Retry]: https://github.com/resilience4j/resilience4j/blob/v2.3.0/resilience4j-annotations/src/main/java/io/github/resilience4j/retry/annotation/Retry.java
 [Scope]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/context/annotation/Scope.java
 [Secured]: https://github.com/spring-projects/spring-security/blob/7.1.1/core/src/main/java/org/springframework/security/access/annotation/Secured.java
-[Serializable]: https://github.com/openjdk/jdk/blob/jdk-25-ga/src/java.base/share/classes/java/io/Serializable.java
+[Serializable]: https://github.com/openjdk/jdk/blob/jdk-27-ga/src/java.base/share/classes/java/io/Serializable.java
 [Service]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-context/src/main/java/org/springframework/stereotype/Service.java
 [SpringApplicationBuilder]: https://github.com/spring-projects/spring-boot/blob/v4.1.1/core/spring-boot/src/main/java/org/springframework/boot/builder/SpringApplicationBuilder.java
 [Transactional]: https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-tx/src/main/java/org/springframework/transaction/annotation/Transactional.java
